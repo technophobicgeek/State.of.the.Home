@@ -1,0 +1,3 @@
+04/12/2011
+
+Can we try using ActiveRecord instead of DataMapper here? Might be better for more complex models. We'll see.
