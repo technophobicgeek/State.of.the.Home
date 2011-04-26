@@ -97,9 +97,10 @@ class Activity
   property :text,         Text,     :required => true
   property :ts,           DateTime, :required => true
   
-  belongs_to :member
-  belongs_to :chore,  :required => false
-  belongs_to :todo,   :required => false
+  belongs_to  :member
+  belongs_to  :chore,     :required => false
+  belongs_to  :todo,      :required => false
+  has 1,      :location,  :required => false
 end
 
 class Location
