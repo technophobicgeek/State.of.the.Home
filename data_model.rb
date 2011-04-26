@@ -1,35 +1,37 @@
 # set up database using datamapper
+require 'datamapper'
+require 'dm-core'
+require 'dm-migrations'
+require 'dm-validations'
+require 'dm-serializer'
 
 class Household
   include DataMapper::Resource
 
-  # fields
   property :id,             Serial
   property :name,           String, :required => true
   property :code,           String, :key => true, :length => 6
-  property :last_updated,   Integer
+  property :last_updated,   DateTime
   
-  # associations
   has n, :chores
   has n, :todos
   has n, :members
   has n, :messages
   has n, :activities
+  has n, :locations
 end
 
 # Chores have a specific set of states associated
 class Chore
   include DataMapper::Resource
 
-  # fields
   property :id,             Serial
   property :name,           String, :required => true
-  property :order,          Integer, :required => true
-  property :last_updated,   Integer
+  property :ordernum,       Integer, :required => true
+  property :last_updated,   DateTime
 
-  # associations
   belongs_to  :household
-  has n,      :states,
+  has n,      :states
 end
 
 class State
@@ -37,32 +39,31 @@ class State
 
   property :id,             Serial
   property :name,           String, :key => true
+  
+  has n,      :chores
 end
 
-# Association between household, chores and states
-class StateOption
+# Association between chores and states
+class ChoreState
   include DataMapper::Resource
   
-  property :order,          Integer, :required => true
-  property :selected,       Boolean, :default => false
+  property  :ordernum,       Integer, :required => true
+  property  :selected,       Boolean, :default => false
     
-  # associations
-  belongs_to :chore
-  belongs_to :state
+  belongs_to :chore,  :key => true
+  belongs_to :state,  :key => true
 end
 
 # Todos are arbitrary tasks
 class Todo
   include DataMapper::Resource
 
-  # fields
   property :id,             Serial
   property :name,           String,   :required => true
-  property :order,          Integer,  :required => true
-  property :last_updated,   Integer
+  property :ordernum,       Integer,  :required => true
+  property :last_updated,   DateTime
   property :done,           Boolean,  :default => false
   
-  # associations
   belongs_to  :household
 end
 
@@ -75,20 +76,18 @@ class Member
   property :cell,         String
   property :twitter,      String
   
-  # associations
   belongs_to :household
 end
 
-# An message is associated with a member
 class Message
   include DataMapper::Resource
 
   property :id,           Serial
   property :text,         Text,     :required => true
-  property :ts,           Datetime, :required => true
+  property :ts,           DateTime, :required => true
   
-  # associations
-  belongs_to :member
+  belongs_to  :member
+  has 1,      :location,  :required => false
 end
 
 class Activity
@@ -96,12 +95,20 @@ class Activity
 
   property :id,           Serial
   property :text,         Text,     :required => true
-  property :ts,           Datetime, :required => true
+  property :ts,           DateTime, :required => true
   
-  # associations
   belongs_to :member
   belongs_to :chore,  :required => false
   belongs_to :todo,   :required => false
+end
+
+class Location
+  include DataMapper::Resource
+
+  property :id,           Serial
+  property :name,         String,  :required => true
+  
+  belongs_to    :household
 end
 
 DataMapper.finalize
@@ -110,5 +117,5 @@ DataMapper.finalize
 DataMapper::Logger.new($stdout, :debug)
 DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/project.db")
 
-Household.auto_migrate! unless Household.storage_exists?
+DataMapper.auto_upgrade!
 

@@ -2,12 +2,6 @@
 #require 'bundler/setup'
 require 'time'
 
-require 'datamapper'
-require 'dm-core'
-require 'dm-migrations'
-require 'dm-validations'
-require 'dm-serializer'
-
 require 'sinatra'
 require 'bitly'
 
