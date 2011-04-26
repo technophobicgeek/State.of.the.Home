@@ -1,3 +1,7 @@
 04/12/2011
 
 Can we try using ActiveRecord instead of DataMapper here? Might be better for more complex models. We'll see.
+
+Syncing: needs to incorporate 301 modified responses to check for whether a resource has been modified since last time of update.
+
+Members: Should we consider a general user-password login mechanism or just members with nicknames? Think about it.

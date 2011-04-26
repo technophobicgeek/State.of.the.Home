@@ -18,46 +18,44 @@ end
 
 describe "service" do
   before(:each) do
-    Dishwasher.destroy
+    Household.destroy
   end
 
-  describe "GET on /api/v1/dishwashers/:code" do
+  describe "GET on /api/v1/household/:code" do
     before(:each) do
-      Dishwasher.create(
+      Household.create(
         :code   => "ABCDEF",
-        :name   => "Apna Dishwasher",
-        :status => "dirty",
+        :name   => "Apna Household",
         :last_updated => Time.now
       )
     end
 
     it "should return a dishwasher by code" do
-      get '/api/v1/dishwashers/ABCDEF'
+      get '/api/v1/household/ABCDEF'
       last_response.should be_ok
       attributes = JSON.parse(last_response.body)
       attributes["code"].should == "ABCDEF"
     end
 
     it "should return a dishwasher with a status" do
-      get '/api/v1/dishwashers/ABCDEF'
+      get '/api/v1/household/ABCDEF'
       last_response.should be_ok
       attributes = JSON.parse(last_response.body)
-      attributes["status"].should_not be_blank
       last_updated = attributes["last_updated"]
       last_updated.should_not be_blank
     end
 
 
     it "should return a 404 for a dishwasher that doesn't exist" do
-      get '/api/v1/dishwashers/foo'
+      get '/api/v1/household/foo'
       last_response.status.should == 404
     end
   end
 
-  describe "POST on /api/v1/dishwashers" do
+  describe "POST on /api/v1/household" do
     it "should create a dishwasher" do
-      post '/api/v1/dishwashers', {
-        :name  => "Apna Dishwasher"
+      post '/api/v1/household', {
+        :name  => "Apna Household"
       }.to_json
       last_response.should be_ok
 
@@ -69,97 +67,92 @@ describe "service" do
       # TODO code should be 6 characters long
       code.length.should == 6
 
-      get "/api/v1/dishwashers/#{code}"
+      get "/api/v1/household/#{code}"
       attributes = JSON.parse(last_response.body)
       attributes["code"].should  == "#{code}"
-      attributes["name"].should == "Apna Dishwasher"
-      attributes["status"].should   == "dirty"
+      attributes["name"].should == "Apna Household"
       attributes["last_updated"].should_not be_blank
     end
   end
 
-  describe "POST on /api/v1/dishwashers/update/:code" do
+  describe "POST on /api/v1/household/update/:code" do
     before :each do
-      Dishwasher.create(
+      Household.create(
         :code => "XYZABC",
-        :name => "Apna Dishwasher",
+        :name => "Apna Household",
         :status => "dirty",
         :last_updated => 10000
       )
     end
 
     it "should return updated info from server if client info is outdated" do
-      post '/api/v1/dishwashers/update/XYZABC', {
+      post '/api/v1/household/update/XYZABC', {
         :status => "clean",:last_updated => "2000"}.to_json
       last_response.should be_ok
-      get '/api/v1/dishwashers/XYZABC'
+      get '/api/v1/household/XYZABC'
       attributes = JSON.parse(last_response.body)
-      attributes["status"].should == "dirty"
       attributes["code"].should == "XYZABC"
       attributes["last_updated"].should == 10000
     end
 
     it "should not return new info from server if client info is newer" do
-      post '/api/v1/dishwashers/update/XYZABC', {
+      post '/api/v1/household/update/XYZABC', {
         :status => "clean",:last_updated => "20000"}.to_json
       last_response.should be_ok
-      get '/api/v1/dishwashers/XYZABC'
+      get '/api/v1/household/XYZABC'
       attributes = JSON.parse(last_response.body)
-      attributes["status"].should == "clean"
       attributes["code"].should == "XYZABC"
-      attributes["name"].should == "Apna Dishwasher"
+      attributes["name"].should == "Apna Household"
       attributes["last_updated"].should == 20000
     end
 
     it "should not update a dishwasher using POST with a nil name" do
-      post '/api/v1/dishwashers/update/XYZABC', {
+      post '/api/v1/household/update/XYZABC', {
         :status => "clean", :name => "",:last_updated => "20000"}.to_json
       last_response.should be_ok
-      get '/api/v1/dishwashers/XYZABC'
+      get '/api/v1/household/XYZABC'
       attributes = JSON.parse(last_response.body)
-      attributes["status"].should == "clean"
       attributes["code"].should == "XYZABC"
-      attributes["name"].should == "Apna Dishwasher"
+      attributes["name"].should == "Apna Household"
       attributes["last_updated"].should == 20000
     end
 
     it "should update a dishwasher using POST with a name" do
-      post '/api/v1/dishwashers/update/XYZABC', {
-        :status => "clean", :name => "Hamara Dishwasher",:last_updated => "20000"}.to_json
+      post '/api/v1/household/update/XYZABC', {
+        :status => "clean", :name => "Hamara Household",:last_updated => "20000"}.to_json
       last_response.should be_ok
-      get '/api/v1/dishwashers/XYZABC'
+      get '/api/v1/household/XYZABC'
       attributes = JSON.parse(last_response.body)
-      attributes["status"].should == "clean"
       attributes["code"].should == "XYZABC"
-      attributes["name"].should == "Hamara Dishwasher"
+      attributes["name"].should == "Hamara Household"
       attributes["last_updated"].should == 20000
     end
   end
 
-  describe "DELETE on /api/v1/dishwashers/:code" do
+  describe "DELETE on /api/v1/household/:code" do
     it "should delete a dishwasher on DELETE" do
-      Dishwasher.create(
+      Household.create(
         :code => "ABCDEF",
-        :name => "Apna Dishwasher",
+        :name => "Apna Household",
         :status => "dirty"
       )
-      delete '/api/v1/dishwashers/ABCDEF'
+      delete '/api/v1/household/ABCDEF'
       last_response.should be_ok
-      get '/api/v1/dishwashers/ABCDEF'
+      get '/api/v1/household/ABCDEF'
       last_response.status.should == 404
     end
   end
 
-  describe "POST on /api/v1/dishwashers/delete/:code" do
+  describe "POST on /api/v1/household/delete/:code" do
     it "should delete a dishwasher on POST" do
-      Dishwasher.create(
+      Household.create(
         :code => "ABCDEF",
-        :name => "Apna Dishwasher",
+        :name => "Apna Household",
         :status => "dirty"
       )
-      post '/api/v1/dishwashers/delete/ABCDEF'
+      post '/api/v1/household/delete/ABCDEF'
       last_response.should be_ok
-      get '/api/v1/dishwashers/ABCDEF'
+      get '/api/v1/household/ABCDEF'
       last_response.status.should == 404
     end
   end

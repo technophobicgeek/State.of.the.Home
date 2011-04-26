@@ -18,7 +18,7 @@ Bitly.use_api_version_3
 $bitly = Bitly.new("plusbzz", "R_18b965b49460efd206c595f066f43370")
 
 
-
+# Always respond with JSON, no XML API
 before do
   content_type 'application/json'
 end
@@ -34,6 +34,7 @@ get '/api/v1/household/:code' do
   end
 end
 
+# Create a new household
 post '/api/v1/household' do
   begin
     body = JSON.parse(request.body.read)
