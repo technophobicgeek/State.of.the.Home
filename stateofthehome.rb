@@ -1,7 +1,9 @@
 require 'time'
 require 'bitly'
 require 'yaml'
-require 'data_model'
+require 'sinatra'
+
+require_relative 'data_model'
 
 # Load API info
 $apikeys = YAML::load_file("apikeys.yml")

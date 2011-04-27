@@ -1,6 +1,3 @@
-require 'time'
-require 'bitly'
-require 'yaml'
 # set up database using datamapper
 require 'datamapper'
 require 'dm-core'
@@ -8,14 +5,6 @@ require 'dm-migrations'
 require 'dm-validations'
 require 'dm-serializer'
 require 'dm-timestamps'
-
-# Load API info
-$apikeys = YAML::load_file("apikeys.yml")
-
-# Bitly
-bitly_info = $apikeys["bitly"]
-Bitly.use_api_version_3
-$bitly = Bitly.new(bitly_info["user"], bitly_info["key"] )
 
 
 class Household
@@ -44,6 +33,7 @@ class Household
   
   def set_auto_properties
     self.code = $bitly.shorten("http://stateofthehome.heroku.com/api/v1/households/#{household.id}").user_hash
+    self.save
   end
   
 end
