@@ -1,9 +1,22 @@
+require 'time'
+require 'bitly'
+require 'yaml'
 # set up database using datamapper
 require 'datamapper'
 require 'dm-core'
 require 'dm-migrations'
 require 'dm-validations'
 require 'dm-serializer'
+require 'dm-timestamps'
+
+# Load API info
+$apikeys = YAML::load_file("apikeys.yml")
+
+# Bitly
+bitly_info = $apikeys["bitly"]
+Bitly.use_api_version_3
+$bitly = Bitly.new(bitly_info["user"], bitly_info["key"] )
+
 
 class Household
   include DataMapper::Resource
@@ -11,14 +24,28 @@ class Household
   property :id,             Serial
   property :name,           String, :required => true
   property :code,           String, :key => true, :length => 6
-  property :last_updated,   DateTime
+  property :created_at,     DateTime
+  property :updated_at,     DateTime
   
-  has n, :chores
-  has n, :todos
-  has n, :members
-  has n, :messages
-  has n, :activities
-  has n, :locations
+  has n,  :chores
+  has n,  :todos
+  has n,  :members
+  has n,  :messages
+  has n,  :activities
+  has n,  :locations
+  
+  after   :create,  :set_auto_properties
+  
+  def self.accept_params(params)
+    params.delete("code") # can't update code
+    params.delete("name") if params["name"].blank?
+    return params    
+  end
+  
+  def set_auto_properties
+    self.code = $bitly.shorten("http://stateofthehome.heroku.com/api/v1/households/#{household.id}").user_hash
+  end
+  
 end
 
 # Chores have a specific set of states associated
@@ -28,7 +55,8 @@ class Chore
   property :id,             Serial
   property :name,           String, :required => true
   property :ordernum,       Integer, :required => true
-  property :last_updated,   DateTime
+  property :created_at,     DateTime
+  property :updated_at,     DateTime
 
   belongs_to  :household
   has n,      :states
@@ -61,7 +89,8 @@ class Todo
   property :id,             Serial
   property :name,           String,   :required => true
   property :ordernum,       Integer,  :required => true
-  property :last_updated,   DateTime
+  property :created_at,     DateTime
+  property :updated_at,     DateTime
   property :done,           Boolean,  :default => false
   
   belongs_to  :household
@@ -82,9 +111,10 @@ end
 class Message
   include DataMapper::Resource
 
-  property :id,           Serial
-  property :text,         Text,     :required => true
-  property :ts,           DateTime, :required => true
+  property :id,             Serial
+  property :text,           Text,     :required => true
+  property :created_at,     DateTime
+  property :updated_at,     DateTime
   
   belongs_to  :member
   has 1,      :location,  :required => false
@@ -93,9 +123,10 @@ end
 class Activity
   include DataMapper::Resource
 
-  property :id,           Serial
-  property :text,         Text,     :required => true
-  property :ts,           DateTime, :required => true
+  property :id,             Serial
+  property :text,           Text,     :required => true
+  property :created_at,     DateTime
+  property :updated_at,     DateTime
   
   belongs_to  :member
   belongs_to  :chore,     :required => false
