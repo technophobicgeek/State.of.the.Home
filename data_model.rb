@@ -18,6 +18,7 @@ class Household
   
   has n,  :chores
   has n,  :todos
+  has n,  :projects
   has n,  :members
   has n,  :messages
   has n,  :activities
@@ -82,10 +83,13 @@ class Todo
   property :ordernum,       Integer,  :required => true
   property :created_at,     DateTime
   property :updated_at,     DateTime
+  property :due_date,       Date
+  property :priority,       Integer,  :default => 0
   property :done,           Boolean,  :default => false
   
   belongs_to  :household
   has n,      :tags
+  has 1,      :project
 end
 
 class Tag
@@ -102,6 +106,15 @@ class TagTodo
   
   belongs_to  :todo,  :key => true
   belongs_to  :tag,   :key => true
+end
+
+class Project
+  include DataMapper::Resource
+  
+  property :id,             Serial
+  property :name,           String,   :required => true
+  
+  belongs_to  :household
 end
 
 class Member
@@ -152,6 +165,6 @@ end
 DataMapper.finalize
 
 # Set up database logs
-DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/project.db")
 DataMapper::Logger.new($stdout, :debug)
+DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/project.db")
 DataMapper.auto_migrate!

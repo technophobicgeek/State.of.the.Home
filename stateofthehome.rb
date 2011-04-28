@@ -59,10 +59,10 @@ put '/api/v1/household/:code' do
   end
 end
 
-delete '/api/v1/household/:code' do |code|
-  household = Household.first(:code => code)
-  return error 404, "household not found".to_json unless household
-  household.destroy
-  status 200
-  body "Deleted household #{code}"
-end
+#delete '/api/v1/household/:code' do |code|
+#  household = Household.first(:code => code)
+#  return error 404, "household not found".to_json unless household
+#  household.destroy
+#  status 200
+#  body "Deleted household #{code}"
+#end
