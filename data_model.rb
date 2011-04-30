@@ -5,9 +5,13 @@ require 'dm-migrations'
 require 'dm-validations'
 require 'dm-serializer'
 require 'dm-timestamps'
+require 'dm-is-list'
 
+# Interesting ideas to capture
+# Log entries on "state transitions"
+# Log should be publishable from various points: some design pattern?
 
-class Household
+class Group
   include DataMapper::Resource
 
   property :id,             Serial
@@ -18,10 +22,9 @@ class Household
   
   has n,  :chores
   has n,  :todos
-  has n,  :projects
   has n,  :members
+  has 1,  :activity_log
   has n,  :messages
-  has n,  :activities
   has n,  :locations
 
   validates_uniqueness_of :code
@@ -35,23 +38,51 @@ class Household
   end
   
   def set_auto_properties
-    self.code ||= $bitly.shorten("http://stateofthehome.heroku.com/api/v1/household/#{self.id}").user_hash
+    self.code ||= $bitly.shorten("http://stateofthehome.heroku.com/api/v1/group/#{self.id}").user_hash
   end
   
+  # Other initialization
+  # Every group is created with one top-level supertask called "Todos"
+end
+
+######################### Tasks #########################
+
+module Task
+  def self.included(base)
+    base.class_eval do      
+      include DataMapper::Resource
+      
+      property :name,           String, :required => true
+      property :ordernum,       Integer, :required => true
+      property :created_at,     DateTime
+      property :updated_at,     DateTime
+    
+      belongs_to  :group
+      is :list, :scope => :group_id
+    end
+  end
 end
 
 # Chores have a specific set of states associated
 class Chore
   include DataMapper::Resource
+  include Task
 
   property :id,             Serial
-  property :name,           String, :required => true
-  property :ordernum,       Integer, :required => true
-  property :created_at,     DateTime
-  property :updated_at,     DateTime
+  has n,    :states
+end
 
-  belongs_to  :household
-  has n,      :states
+# Todos are arbitrary tasks
+class Todo
+  include DataMapper::Resource
+  include Task
+  
+  property :id,             Serial
+  property :due_date,       Date
+  property :priority,       Integer,  :default => 0
+  property :done_date,      Date
+  
+  # TODO supertask and sequence
 end
 
 class State
@@ -67,55 +98,14 @@ end
 class ChoreState
   include DataMapper::Resource
   
-  property  :ordernum,       Integer, :required => true
-  property  :selected,       Boolean, :default => false
+  property  :ordernum, Integer, :required => true
+  property  :selected, Boolean, :default => false
     
   belongs_to :chore,  :key => true
   belongs_to :state,  :key => true
 end
 
-# Todos are arbitrary tasks
-class Todo
-  include DataMapper::Resource
-
-  property :id,             Serial
-  property :name,           String,   :required => true
-  property :ordernum,       Integer,  :required => true
-  property :created_at,     DateTime
-  property :updated_at,     DateTime
-  property :due_date,       Date
-  property :priority,       Integer,  :default => 0
-  property :done,           Boolean,  :default => false
-  
-  belongs_to  :household
-  has n,      :tags
-  has 1,      :project
-end
-
-class Tag
-  include DataMapper::Resource
-
-  property :id,             Serial
-  property :value,          String,   :required => true
-  
-  has n,      :todos
-end
-
-class TagTodo
-  include DataMapper::Resource
-  
-  belongs_to  :todo,  :key => true
-  belongs_to  :tag,   :key => true
-end
-
-class Project
-  include DataMapper::Resource
-  
-  property :id,             Serial
-  property :name,           String,   :required => true
-  
-  belongs_to  :household
-end
+######################### Users #########################
 
 class Member
   include DataMapper::Resource
@@ -126,32 +116,47 @@ class Member
   property :cell,         String
   property :twitter,      String
   
-  belongs_to :household,  :key => true
+  belongs_to :group,      :key => true
 end
+
+######################### Messages ########################
 
 class Message
   include DataMapper::Resource
-
-  property :id,             Serial
-  property :text,           Text,     :required => true
-  property :created_at,     DateTime
   
+  property :id,    Serial
+  property :text,  Text,     :required => true
+  property :created_at,     DateTime
+
   belongs_to  :member
-  has 1,      :location,  :required => false
+
 end
 
-class Activity
-  include DataMapper::Resource
+######################### Activities #######################
 
-  property :id,             Serial
-  property :text,           Text,     :required => true
-  property :created_at,     DateTime
+class ActivityEntry
+  include DataMapper::Resource
   
+  property :id,    Serial
+  property :text,  Text,  :required => false
+
   belongs_to  :member,    :required => false
   belongs_to  :chore,     :required => false
   belongs_to  :todo,      :required => false
-  has 1,      :location,  :required => false
+  belongs_to  :location,  :required => false
 end
+
+class ActivityLog
+  include DataMapper::Resource
+
+  property :id,             Serial
+  property :created_at,     DateTime
+  
+  belongs_to  :group
+  has n,      :activity_entries
+end
+
+######################### Locations ########################
 
 class Location
   include DataMapper::Resource
@@ -159,8 +164,10 @@ class Location
   property :id,           Serial
   property :name,         String,  :required => true, :key => true
   
-  belongs_to    :household, :key => true
+  belongs_to    :group,   :key => true
 end
+
+############################################################
 
 DataMapper.finalize
 
