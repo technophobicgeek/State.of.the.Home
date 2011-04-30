@@ -1,4 +1,5 @@
 # set up database using datamapper
+require 'rubygems'
 require 'datamapper'
 require 'dm-core'
 require 'dm-migrations'
@@ -6,10 +7,12 @@ require 'dm-validations'
 require 'dm-serializer'
 require 'dm-timestamps'
 require 'dm-is-list'
+require 'dm-is-tree'
 
 # Interesting ideas to capture
 # Log entries on "state transitions"
 # Log should be publishable from various points: some design pattern?
+# Billing Chore: how do we reset?
 
 class Group
   include DataMapper::Resource
@@ -58,7 +61,6 @@ module Task
       property :updated_at,     DateTime
     
       belongs_to  :group
-      is :list, :scope => :group_id
     end
   end
 end
@@ -69,8 +71,15 @@ class Chore
   include Task
 
   property :id,             Serial
+  property :due_date,       DateTime
+  property :reset_date,     DateTime
+  
   has n,    :states
+  is :list, :scope => :group_id
+  # Every group has a chore called Dishwasher, as an example?
 end
+
+
 
 # Todos are arbitrary tasks
 class Todo
@@ -82,7 +91,8 @@ class Todo
   property :priority,       Integer,  :default => 0
   property :done_date,      Date
   
-  # TODO supertask and sequence
+  # TODO supertask and sequence, use dm-is-tree
+  is :tree,    :order => :ordernum
 end
 
 class State
@@ -94,7 +104,7 @@ class State
   has n,      :chores
 end
 
-# Association between chores and states
+# Association between chores and states. Do we really need this?
 class ChoreState
   include DataMapper::Resource
   
