@@ -30,39 +30,39 @@ before do
   content_type 'application/json'
 end
 
-get '/api/v1/household/:code' do
-  household = Household.first(:code => params[:code])
-  return error 404, "household not found".to_json unless household
-  household.to_json
+get '/api/v1/group/:code' do
+  group = Group.first(:code => params[:code])
+  return error 404, "group not found".to_json unless group
+  group.to_json
 end
 
-post '/api/v1/household' do
+post '/api/v1/group' do
   begin
     body = JSON.parse(request.body.read)
-    household = Household.create(body)    
-    return error 400, "error creating household".to_json unless household.saved?
-    household.to_json
+    group = Group.create(body)    
+    return error 400, "error creating group".to_json unless group.saved?
+    group.to_json
   rescue => e
     error 400, e.message.to_json
   end
 end
 
-put '/api/v1/household/:code' do 
-  household = Household.first(:code => params[:code])
-  return error 404, "household not found".to_json unless household
+put '/api/v1/group/:code' do 
+  group = Group.first(:code => params[:code])
+  return error 404, "group not found".to_json unless group
   begin
-    body = Household.accept_params(JSON.parse(request.body.read))
-    household.update(body) # TODO if timestamps work
-    household.to_json
+    body = Group.accept_params(JSON.parse(request.body.read))
+    group.update(body) # TODO if timestamps work
+    group.to_json
   rescue => e
     error 400, e.message.to_json
   end
 end
 
-#delete '/api/v1/household/:code' do |code|
-#  household = Household.first(:code => code)
-#  return error 404, "household not found".to_json unless household
-#  household.destroy
+#delete '/api/v1/group/:code' do |code|
+#  group = Group.first(:code => code)
+#  return error 404, "group not found".to_json unless group
+#  group.destroy
 #  status 200
-#  body "Deleted household #{code}"
+#  body "Deleted group #{code}"
 #end

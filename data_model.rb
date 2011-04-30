@@ -27,7 +27,7 @@ class Group
   has n,  :todos
   has n,  :members
   has 1,  :activity_log
-  has n,  :messages
+  has 1,  :message_board
   has n,  :locations
 
   validates_uniqueness_of :code
@@ -134,12 +134,21 @@ end
 class Message
   include DataMapper::Resource
   
-  property :id,    Serial
-  property :text,  Text,     :required => true
-  property :created_at,     DateTime
+  property :id,         Serial
+  property :text,       Text,     :required => true
+  property :created_at, DateTime
 
   belongs_to  :member
+  belongs_to  :message_board
+end
 
+class MessageBoard
+  include DataMapper::Resource
+  
+  property :id,  Serial
+
+  belongs_to :group
+  has n,     :messages
 end
 
 ######################### Activities #######################
@@ -149,18 +158,19 @@ class ActivityEntry
   
   property :id,    Serial
   property :text,  Text,  :required => false
+  property :created_at,     DateTime
 
   belongs_to  :member,    :required => false
   belongs_to  :chore,     :required => false
   belongs_to  :todo,      :required => false
   belongs_to  :location,  :required => false
+  belongs_to  :activity_log
 end
 
 class ActivityLog
   include DataMapper::Resource
 
   property :id,             Serial
-  property :created_at,     DateTime
   
   belongs_to  :group
   has n,      :activity_entries

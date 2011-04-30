@@ -1,5 +1,5 @@
 require_relative '../stateofthehome'
-require 'dm-sweatshop'
+#require 'dm-sweatshop'
 gem 'rspec'
 require 'rspec'
 gem 'rack-test'
