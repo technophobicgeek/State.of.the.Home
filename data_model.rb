@@ -55,8 +55,7 @@ module Task
     base.class_eval do      
       include DataMapper::Resource
       
-      property :name,           String, :required => true
-      property :ordernum,       Integer, :required => true
+      property :name,           String,   :required => true
       property :created_at,     DateTime
       property :updated_at,     DateTime
     
@@ -91,8 +90,7 @@ class Todo
   property :priority,       Integer,  :default => 0
   property :done_date,      Date
   
-  # TODO supertask and sequence, use dm-is-tree
-  is :tree,    :order => :ordernum
+  is :tree, :order => priority
 end
 
 class State
@@ -157,13 +155,13 @@ class ActivityEntry
   include DataMapper::Resource
   
   property :id,    Serial
-  property :text,  Text,  :required => false
-  property :created_at,     DateTime
+  property :text,  Text,    :required => false
+  property :created_at,      DateTime
 
-  belongs_to  :member,    :required => false
-  belongs_to  :chore,     :required => false
-  belongs_to  :todo,      :required => false
-  belongs_to  :location,  :required => false
+  belongs_to  :member,      :required => false
+  belongs_to  :chore,       :required => false
+  belongs_to  :todo,        :required => false
+  belongs_to  :location,    :required => false
   belongs_to  :activity_log
 end
 
@@ -192,6 +190,28 @@ end
 DataMapper.finalize
 
 # Set up database logs
-DataMapper::Logger.new($stdout, :debug)
+#DataMapper::Logger.new($stdout, :debug)
 DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/project.db")
 DataMapper.auto_migrate!
+
+
+# Create a dishwasher chore with two states: clean and dirty (default)
+def create_dishwasher_states
+  clean_state = State.create(:name => "Clean")
+  dirty_state = State.create(:name => "Dirty")
+end
+
+def create_dishwasher_chore_states(dishwasher_chore)
+  ChoreState.create(
+    :chore => dishwasher_chore,
+    :state => clean_state,
+    :ordernum => 1
+  )
+  ChoreState.create(
+    :chore => dishwasher_chore,
+    :state => clean_state,
+    :ordernum => 2,
+    :selected => true
+  )
+end
+

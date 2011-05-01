@@ -59,6 +59,7 @@ put '/api/v1/group/:code' do
   end
 end
 
+#Delete a group only if the number of members drops to 0?
 #delete '/api/v1/group/:code' do |code|
 #  group = Group.first(:code => code)
 #  return error 404, "group not found".to_json unless group

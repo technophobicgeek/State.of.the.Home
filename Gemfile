@@ -8,6 +8,9 @@ gem 'dm-postgres-adapter'
 gem 'dm-migrations'
 gem 'dm-validations'
 gem 'dm-serializer'
+gem 'dm-timestamps'
+gem 'dm-is-list'
+gem 'dm-is-tree'
 
 gem 'sqlite3'
 gem 'sinatra'
@@ -17,5 +20,7 @@ gem 'bitly'
 gem 'json'
 
 # testing
-gem 'rspec'
-gem 'rack-test'
+group :test do
+  gem 'rspec'
+  gem 'rack-test'
+end

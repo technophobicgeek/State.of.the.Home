@@ -1,16 +1,4 @@
-require_relative '../stateofthehome'
-#require 'dm-sweatshop'
-gem 'rspec'
-require 'rspec'
-gem 'rack-test'
-require 'rack/test'
-require 'date'
-
-set :environment, :test
-
-RSpec.configure do |conf|
-  conf.include Rack::Test::Methods
-end
+require_relative 'spec_helper'
 
 def app
   Sinatra::Application
@@ -19,7 +7,6 @@ end
 describe "service" do
   before(:each) do
     Group.destroy
-    Chore.destroy
   end
   
   # Group model
@@ -98,13 +85,12 @@ describe "service" do
   
     it "should not update the code of a group" do
       put '/api/v1/group/ABCDEF', {
-        :code  => "UVWXYZ"
+        :code  => "UVWXYA"
       }.to_json
       last_response.should be_ok
 
       attributes = JSON.parse(last_response.body)
       attributes["code"].should == "ABCDEF"
-    end
-        
+    end       
   end  
 end
