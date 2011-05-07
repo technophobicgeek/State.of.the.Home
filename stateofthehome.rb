@@ -36,6 +36,11 @@ helpers do
     halt error 404, "Group \"#{params[:code]}\" not found" unless group
     group
   end
+  def find_chore
+    chore = Chore.first(:name => params[:name], :group => find_group)
+    halt error 404, "Chore \"#{params[:name]}\" not found" unless chore
+    chore
+  end
 end
 
 # All GET requests
@@ -44,13 +49,49 @@ get '/api/v1/group/:code' do
 end
 
 get '/api/v1/group/:code/chores/all' do
-  group = find_group
+  find_group.to_json(
+    :only => [:name,:code],
+    :relationships => {
+      :chores => {
+        :only => [:name,:position],
+        :relationships => {
+          :states   => { :only => [:name,:position]},
+          :selected => { :only => [:name]}
+        }
+      }
+    }
+  )
 end
 
 get '/api/v1/group/:code/chores/selected' do
+  find_group.to_json(
+    :only => [:code],
+    :relationships => {
+      :chores => {
+        :only => [:name],
+        :relationships => {:selected => { :only => [:name]}}
+      }
+    }
+  )
 end
 
 get '/api/v1/group/:code/chore/:name' do
+  find_chore.to_json(
+    :only => [:name,:position],
+    :relationships => {
+      :states   => { :only => [:name,:position]},
+      :selected => { :only => [:name]}
+    }
+  )
+end
+
+get '/api/v1/group/:code/chore/:name/selected' do
+  find_chore.to_json(
+    :only => [:name,:position],
+    :relationships => {
+      :selected => { :only => [:name]}
+    }
+  )
 end
 
 # All POST requests

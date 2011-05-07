@@ -19,14 +19,16 @@ describe "service" do
         :name   => "The Tango Loft"
       )
       
-      chore = Chore.create(:name => "Dishwasher", :group => group )
-      states = %w[Clean Dirty].map {|s| State.create(:name => s, :chore => chore)}
-      State.first(:name => "Clean",:chore => chore).update(:selected => true)
-      
-      chore = Chore.create(:name => "Laundry", :group => group )
-      states = %w[Fresh Stinky].map {|s| State.create(:name => s, :chore => chore)}
-      State.first(:name => "Stinky",:chore => chore).update(:selected => true)
-      
+      chore1 = Chore.create(:name => "Dishwasher", :group => group )
+      %w[Clean Dirty].map {|s| State.create(:name => s, :chore => chore1)}
+      chore1.update(:selected => State.first(:name => "Clean",:chore => chore1))
+      chore2 = Chore.create(:name => "Laundry", :group => group )
+      %w[Fresh Stinky].map {|s| State.create(:name => s, :chore => chore2)}
+      state = State.first(:name => "Stinky",:chore => chore2)
+      puts state.name
+      chore2.update(:selected => state)
+      puts chore2.saved?
+      puts chore2.selected.name   
     end
     
     describe "/group/:code" do
@@ -52,26 +54,46 @@ describe "service" do
           get '/api/v1/group/ABCDEF/chores/all'
           last_response.should be_ok
           attributes = JSON.parse(last_response.body)
-          puts attributes
+          chores = attributes["chores"]
+          puts chores
+          chores[0]["name"].should == "Dishwasher"
+          chores[0]["states"][0]["name"].should == "Clean"
+          chores[0]["selected"]["name"].should == "Clean"
+          chores[0]["states"][1]["name"].should == "Dirty"
+          chores[1]["name"].should == "Laundry"
+          chores[1]["states"][0]["name"].should == "Fresh"
+          chores[1]["states"][1]["name"].should == "Stinky"
+          chores[1]["selected"]["name"].should == "Stinky"
         end
         
         it "should return all chores and their selected states" do
           get '/api/v1/group/ABCDEF/chores/selected'               
           last_response.should be_ok
           attributes = JSON.parse(last_response.body)
+          chores = attributes["chores"]
+          chores[0]["name"].should == "Dishwasher"
+          chores[0]["selected"]["name"].should == "Clean"
+          chores[1]["name"].should == "Laundry"
+          chores[1]["selected"]["name"].should == "Stinky"
         end
         
         describe "/:name" do
           it "should return a chore with a specific name" do
-            get '/api/v1/group/ABCDEF/chores/Dishwasher'       
+            get '/api/v1/group/ABCDEF/chore/Dishwasher'       
             last_response.should be_ok
             attributes = JSON.parse(last_response.body)
+            attributes["name"].should == "Dishwasher"
+            attributes["states"][0]["name"].should == "Clean"
+            attributes["states"][1]["name"].should == "Dirty"
+            attributes["selected"]["name"].should == "Clean"
           end
       
           it "should return the selected state of a chore with a specific name" do
-            get '/api/v1/group/ABCDEF/chores/Dishwasher/selected'               
+            get '/api/v1/group/ABCDEF/chore/Laundry/selected'               
             last_response.should be_ok
             attributes = JSON.parse(last_response.body)
+            attributes["name"].should == "Laundry"
+            attributes["selected"]["name"].should == "Stinky"
           end
           
         end

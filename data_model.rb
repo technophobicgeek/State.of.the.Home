@@ -8,6 +8,7 @@ require 'dm-serializer'
 require 'dm-timestamps'
 require 'dm-is-list'
 require 'dm-is-tree'
+require 'json'
 
 # Interesting ideas to capture
 # Log entries on "state transitions"
@@ -73,14 +74,10 @@ class Chore
   property :reset_date,     DateTime
   
   has n,    :states
+  has 1,    :selected, 'State'
   is :list, :scope => :group_id
   
-  # Converting to JSON
-  def to_json_all
-  end
-  
-  def to_json_selected
-  end
+
 end
 
 
@@ -103,10 +100,10 @@ class State
 
   property :id,             Serial
   property :name,           String,   :key => true
-  property :selected,       Boolean,  :default => false
   
   belongs_to :chore
   is  :list,  :scope => :chore_id
+
 end
 
 
