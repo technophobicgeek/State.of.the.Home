@@ -53,10 +53,9 @@ get '/api/v1/group/:code/chores/all' do
     :only => [:name,:code],
     :relationships => {
       :chores => {
-        :only => [:name,:position],
+        :only => [:name,:position,:selected],
         :relationships => {
           :states   => { :only => [:name,:position]},
-          :selected => { :only => [:name]}
         }
       }
     }
@@ -68,8 +67,7 @@ get '/api/v1/group/:code/chores/selected' do
     :only => [:code],
     :relationships => {
       :chores => {
-        :only => [:name],
-        :relationships => {:selected => { :only => [:name]}}
+        :only => [:name,:selected]
       }
     }
   )
@@ -77,20 +75,16 @@ end
 
 get '/api/v1/group/:code/chore/:name' do
   find_chore.to_json(
-    :only => [:name,:position],
+    :only => [:name,:position,:selected],
     :relationships => {
       :states   => { :only => [:name,:position]},
-      :selected => { :only => [:name]}
     }
   )
 end
 
 get '/api/v1/group/:code/chore/:name/selected' do
   find_chore.to_json(
-    :only => [:name,:position],
-    :relationships => {
-      :selected => { :only => [:name]}
-    }
+    :only => [:selected],
   )
 end
 

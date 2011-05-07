@@ -72,9 +72,9 @@ class Chore
   property :id,             Serial
   property :due_date,       DateTime
   property :reset_date,     DateTime
+  property :selected,       Integer  #,:default => 1
   
   has n,    :states
-  has 1,    :selected, 'State'
   is :list, :scope => :group_id
   
 
