@@ -44,8 +44,6 @@ class Group
     self.code ||= $bitly.shorten("http://stateofthehome.heroku.com/api/v1/group/#{self.id}").user_hash
   end
   
-  # Other initialization
-  # Every group is created with one top-level supertask called "Todos"
 end
 
 ######################### Tasks #########################
@@ -55,11 +53,12 @@ module Task
     base.class_eval do      
       include DataMapper::Resource
       
-      property :name,           String,   :required => true
+      property :name,           String,   :required => true, :unique => :group_id
       property :created_at,     DateTime
       property :updated_at,     DateTime
     
       belongs_to  :group
+      validates_uniqueness_of :name, :scope => :group_id
     end
   end
 end
@@ -75,7 +74,13 @@ class Chore
   
   has n,    :states
   is :list, :scope => :group_id
-  # Every group has a chore called Dishwasher, as an example?
+  
+  # Converting to JSON
+  def to_json_all
+  end
+  
+  def to_json_selected
+  end
 end
 
 
@@ -97,21 +102,14 @@ class State
   include DataMapper::Resource
 
   property :id,             Serial
-  property :name,           String, :key => true
+  property :name,           String,   :key => true
+  property :selected,       Boolean,  :default => false
   
-  has n,      :chores
+  belongs_to :chore
+  is  :list,  :scope => :chore_id
 end
 
-# Association between chores and states. Do we really need this?
-class ChoreState
-  include DataMapper::Resource
-  
-  property  :ordernum, Integer, :required => true
-  property  :selected, Boolean, :default => false
-    
-  belongs_to :chore,  :key => true
-  belongs_to :state,  :key => true
-end
+
 
 ######################### Users #########################
 
@@ -119,12 +117,13 @@ class Member
   include DataMapper::Resource
 
   property :id,           Serial
-  property :name,         String,  :required => true, :key => true
+  property :name,         String,  :required => true, :unique => :group_id
   property :email,        String
   property :cell,         String
   property :twitter,      String
   
-  belongs_to :group,      :key => true
+  belongs_to :group
+  validates_uniqueness_of :name, :scope => :group_id
 end
 
 ######################### Messages ########################
@@ -193,25 +192,3 @@ DataMapper.finalize
 #DataMapper::Logger.new($stdout, :debug)
 DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/project.db")
 DataMapper.auto_migrate!
-
-
-# Create a dishwasher chore with two states: clean and dirty (default)
-def create_dishwasher_states
-  clean_state = State.create(:name => "Clean")
-  dirty_state = State.create(:name => "Dirty")
-end
-
-def create_dishwasher_chore_states(dishwasher_chore)
-  ChoreState.create(
-    :chore => dishwasher_chore,
-    :state => clean_state,
-    :ordernum => 1
-  )
-  ChoreState.create(
-    :chore => dishwasher_chore,
-    :state => clean_state,
-    :ordernum => 2,
-    :selected => true
-  )
-end
-

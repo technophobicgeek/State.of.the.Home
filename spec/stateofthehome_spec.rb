@@ -6,34 +6,78 @@ end
 
 describe "service" do
   before(:each) do
+    State.destroy
+    Chore.destroy
     Group.destroy
   end
   
-  # Group model
-  describe "GET on /api/v1/group/:code" do
+  # GETs
+  describe "GET on /api/v1" do
     before(:each) do
-      @group = Group.create(
+      group = Group.create(
         :code   => "ABCDEF",
         :name   => "The Tango Loft"
       )
+      
+      chore = Chore.create(:name => "Dishwasher", :group => group )
+      states = %w[Clean Dirty].map {|s| State.create(:name => s, :chore => chore)}
+      State.first(:name => "Clean",:chore => chore).update(:selected => true)
+      
+      chore = Chore.create(:name => "Laundry", :group => group )
+      states = %w[Fresh Stinky].map {|s| State.create(:name => s, :chore => chore)}
+      State.first(:name => "Stinky",:chore => chore).update(:selected => true)
+      
     end
     
-    it "should return a group by code" do
-      get '/api/v1/group/ABCDEF'
-      last_response.should be_ok
-      attributes = JSON.parse(last_response.body)
-      attributes["code"].should == "ABCDEF"
-      attributes["name"].should == "The Tango Loft"
-      attributes["created_at"].should_not be_blank      
-      attributes["updated_at"].should_not be_blank
-    end
-    
-    it "should return a 404 for a group that doesn't exist" do
-      get '/api/v1/group/foo'
-      last_response.status.should == 404
-    end
-    
-    describe "GET on /api/v1/group/:code/chore" do      
+    describe "/group/:code" do
+      it "should return a group by code" do
+        get '/api/v1/group/ABCDEF'
+        last_response.should be_ok
+        attributes = JSON.parse(last_response.body)
+        attributes["code"].should == "ABCDEF"
+        attributes["name"].should == "The Tango Loft"
+        attributes["created_at"].should_not be_blank      
+        attributes["updated_at"].should_not be_blank
+      end
+      
+      it "should return a 404 for a group that doesn't exist" do
+        get '/api/v1/group/foo'
+        last_response.status.should == 404
+        last_response.body.should == "Group \"foo\" not found"        
+      end
+      
+      describe "/chore" do
+        
+        it "should return all chores and all their states with selections" do
+          get '/api/v1/group/ABCDEF/chores/all'
+          last_response.should be_ok
+          attributes = JSON.parse(last_response.body)
+          puts attributes
+        end
+        
+        it "should return all chores and their selected states" do
+          get '/api/v1/group/ABCDEF/chores/selected'               
+          last_response.should be_ok
+          attributes = JSON.parse(last_response.body)
+        end
+        
+        describe "/:name" do
+          it "should return a chore with a specific name" do
+            get '/api/v1/group/ABCDEF/chores/Dishwasher'       
+            last_response.should be_ok
+            attributes = JSON.parse(last_response.body)
+          end
+      
+          it "should return the selected state of a chore with a specific name" do
+            get '/api/v1/group/ABCDEF/chores/Dishwasher/selected'               
+            last_response.should be_ok
+            attributes = JSON.parse(last_response.body)
+          end
+          
+        end
+        
+      end
+      
     end
     
   end

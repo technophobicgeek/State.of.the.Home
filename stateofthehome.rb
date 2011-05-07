@@ -30,12 +30,30 @@ before do
   content_type 'application/json'
 end
 
-get '/api/v1/group/:code' do
-  group = Group.first(:code => params[:code])
-  return error 404, "group not found".to_json unless group
-  group.to_json
+helpers do
+  def find_group
+    group = Group.first(:code => params[:code])
+    halt error 404, "Group \"#{params[:code]}\" not found" unless group
+    group
+  end
 end
 
+# All GET requests
+get '/api/v1/group/:code' do
+  find_group.to_json
+end
+
+get '/api/v1/group/:code/chores/all' do
+  group = find_group
+end
+
+get '/api/v1/group/:code/chores/selected' do
+end
+
+get '/api/v1/group/:code/chore/:name' do
+end
+
+# All POST requests
 post '/api/v1/group' do
   begin
     body = JSON.parse(request.body.read)
@@ -47,6 +65,17 @@ post '/api/v1/group' do
   end
 end
 
+post '/api/v1/group/:code/chore' do
+  begin
+    group = Group.first(:code => params[:code])
+    return error 404, "group not found".to_json unless group
+    body = JSON.parse(request.body.read)
+  rescue => e
+    error 400, e.message.to_json
+  end
+end
+
+# All PUT requests
 put '/api/v1/group/:code' do 
   group = Group.first(:code => params[:code])
   return error 404, "group not found".to_json unless group
@@ -59,6 +88,18 @@ put '/api/v1/group/:code' do
   end
 end
 
+put '/api/v1/group/:code/chore/:id/selected' do
+  begin
+    group = Group.first(:code => params[:code])
+    return error 404, "group not found".to_json unless group
+    body = JSON.parse(request.body.read)
+  rescue => e
+    error 400, e.message.to_json
+  end
+end
+
+
+# All DELETE requests
 #Delete a group only if the number of members drops to 0?
 #delete '/api/v1/group/:code' do |code|
 #  group = Group.first(:code => code)

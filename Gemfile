@@ -11,10 +11,12 @@ gem 'dm-serializer'
 gem 'dm-timestamps'
 gem 'dm-is-list'
 gem 'dm-is-tree'
+gem 'dm-sweatshop'
 
 gem 'sqlite3'
 gem 'sinatra'
 gem 'bitly'
+gem 'simplegeo'
 
 #client
 gem 'json'
