@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'time'
 require 'bitly'
 require 'simplegeo'
@@ -74,37 +75,34 @@ get '/api/v1/group/:code/chores/selected' do
 end
 
 get '/api/v1/group/:code/chore/:name' do
-  find_chore.to_json(
-    :only => [:name,:position,:selected],
-    :relationships => {
-      :states   => { :only => [:name,:position]},
-    }
-  )
+  find_chore.to_json_basic
 end
 
 get '/api/v1/group/:code/chore/:name/selected' do
-  find_chore.to_json(
-    :only => [:selected],
-  )
+  find_chore.to_json(:only => [:selected])
 end
 
 # All POST requests
-post '/api/v1/group' do
+post '/api/v1/group/new' do
   begin
     body = JSON.parse(request.body.read)
     group = Group.create(body)    
-    return error 400, "error creating group".to_json unless group.saved?
+    halt error 400, "error creating group".to_json unless group.saved?
     group.to_json
   rescue => e
     error 400, e.message.to_json
   end
 end
 
-post '/api/v1/group/:code/chore' do
+post '/api/v1/group/:code/chore/new' do
   begin
-    group = Group.first(:code => params[:code])
-    return error 404, "group not found".to_json unless group
-    body = JSON.parse(request.body.read)
+    c_params = Chore.accept_params(JSON.parse(request.body.read),find_group)
+    chore = Chore.create c_params
+    c_params["states"].each do |s_params|
+      State.new(State.accept_params(s_params,chore))     
+    end
+    halt error 400, "error creating chore".to_json unless chore.saved?
+    chore.to_json_basic
   rescue => e
     error 400, e.message.to_json
   end
@@ -112,8 +110,7 @@ end
 
 # All PUT requests
 put '/api/v1/group/:code' do 
-  group = Group.first(:code => params[:code])
-  return error 404, "group not found".to_json unless group
+  group = find_group
   begin
     body = Group.accept_params(JSON.parse(request.body.read))
     group.update(body) # TODO if timestamps work

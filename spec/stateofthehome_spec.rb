@@ -101,7 +101,7 @@ describe "service" do
 
   describe "POST on /api/v1/group" do
     it "should create a group" do
-      post '/api/v1/group', {
+      post '/api/v1/group/new', {
         :name  => "The Tango Loft"
       }.to_json
       last_response.should be_ok
@@ -113,6 +113,32 @@ describe "service" do
 
       get "/api/v1/group/#{code}"
       last_response.should be_ok
+    end
+  end
+
+  describe "POST on /api/v1/group/:code" do
+    before(:each) do
+      group = Group.create(
+        :code   => "ABCDEF",
+        :name   => "The Tango Loft"
+      )
+    end
+
+
+    it "should create a new chore for a group" do
+      post '/api/v1/group/ABCDEF/chore/new', {
+        :name  => "Dishwasher",
+        :states => [
+          {:name => "Clean"},
+          {:name => "Dirty"},
+        ]
+      }.to_json
+      last_response.should be_ok
+
+      attributes = JSON.parse(last_response.body)
+      attributes["name"].should == "Dishwasher"
+      attributes["states"][0]["name"].should == "Clean"
+      attributes["states"][1]["name"].should == "Dirty"
     end
   end
   

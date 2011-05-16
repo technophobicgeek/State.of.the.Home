@@ -72,12 +72,25 @@ class Chore
   property :id,             Serial
   property :due_date,       DateTime
   property :reset_date,     DateTime
-  property :selected,       Integer  #,:default => 1
+  property :selected,       Integer,  :default => 1
   
   has n,    :states
   is :list, :scope => :group_id
-  
 
+  def self.accept_params(params,group)
+    halt error 400, "Chore name cannot be empty" if params["name"].blank?
+    params["group"] = group
+    return params    
+  end
+
+  def to_json_basic
+    self.to_json(
+      :only => [:name,:position,:selected],
+      :relationships => {
+        :states   => { :only => [:name,:position]},
+      }
+    )
+  end
 end
 
 
@@ -104,6 +117,12 @@ class State
   belongs_to :chore
   is  :list,  :scope => :chore_id
 
+  def self.accept_params(params,chore)
+    halt error 400, "State name cannot be empty"  if params["name"].blank?
+    params["chore"] = chore
+    return params    
+  end
+      
 end
 
 
