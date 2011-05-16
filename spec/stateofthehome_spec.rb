@@ -179,5 +179,47 @@ describe "service" do
       attributes = JSON.parse(last_response.body)
       attributes["code"].should == "ABCDEF"
     end       
-  end  
+  end
+  
+  describe "PUT on /api/v1/group/:code/chore" do
+    before(:each) do
+      Group.create(
+        :code   => "ABCDEF",
+        :name   => "The Tango Loft"
+      )
+      
+      chore1 = Chore.create(:name => "Dishwasher", :group => group )
+      %w[Clean Dirty].map {|s| State.create(:name => s, :chore => chore1)}
+      chore1.update(:selected => 1)
+      chore2 = Chore.create(:name => "Laundry", :group => group )
+      %w[Fresh Stinky].map {|s| State.create(:name => s, :chore => chore2)}
+      state = State.first(:name => "Stinky",:chore => chore2)
+    end
+    
+    it "should update the name of a chore"
+    
+    it "should update the list of states" 
+   
+ 
+  end
+  
+    describe "DEL on /api/v1/group/:code/chore" do
+    before(:each) do
+      Group.create(
+        :code   => "ABCDEF",
+        :name   => "The Tango Loft"
+      )
+      
+      chore1 = Chore.create(:name => "Dishwasher", :group => group )
+      %w[Clean Dirty].map {|s| State.create(:name => s, :chore => chore1)}
+      chore1.update(:selected => 1)
+      chore2 = Chore.create(:name => "Laundry", :group => group )
+      %w[Fresh Stinky].map {|s| State.create(:name => s, :chore => chore2)}
+      state = State.first(:name => "Stinky",:chore => chore2)
+    end
+    
+    it "should delete a chore" 
+   
+ 
+  end 
 end

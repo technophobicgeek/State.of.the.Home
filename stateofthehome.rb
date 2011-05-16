@@ -99,7 +99,7 @@ post '/api/v1/group/:code/chore/new' do
     c_params = Chore.accept_params(JSON.parse(request.body.read),find_group)
     chore = Chore.create c_params
     c_params["states"].each do |s_params|
-      State.new(State.accept_params(s_params,chore))     
+      State.create(State.accept_params(s_params,chore))     
     end
     halt error 400, "error creating chore".to_json unless chore.saved?
     chore.to_json_basic
