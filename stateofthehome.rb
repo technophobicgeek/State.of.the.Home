@@ -54,9 +54,10 @@ get '/api/v1/group/:code/chores/all' do
     :only => [:name,:code],
     :relationships => {
       :chores => {
-        :only => [:name,:position,:selected],
+        :only => [:id,:name,:position,:selected],
         :relationships => {
           :states   => { :only => [:name,:position]},
+          :selected_state   => { :only => [:name,:position]},
         }
       }
     }
@@ -68,7 +69,7 @@ get '/api/v1/group/:code/chores/selected' do
     :only => [:code],
     :relationships => {
       :chores => {
-        :only => [:name,:selected]
+        :only => [:id,:selected]
       }
     }
   )

@@ -14,18 +14,17 @@ describe "service" do
   # GETs
   describe "GET on /api/v1" do
     before(:each) do
-      group = Group.create(
+      @group = Group.create(
         :code   => "ABCDEF",
         :name   => "The Tango Loft"
       )
       
-      chore1 = Chore.create(:name => "Dishwasher", :group => group )
-      %w[Clean Dirty].map {|s| State.create(:name => s, :chore => chore1)}
-      chore1.update(:selected => 1)
-      chore2 = Chore.create(:name => "Laundry", :group => group )
-      %w[Fresh Stinky].map {|s| State.create(:name => s, :chore => chore2)}
-      state = State.first(:name => "Stinky",:chore => chore2)
-      chore2.update(:selected => 2)   
+      @chore1 = Chore.create(:name => "Dishwasher", :group => @group )
+      @states1 = %w[Clean Dirty].map {|s| State.create(:name => s, :chore => @chore1)}
+      @chore1.update(:selected => 1)
+      @chore2 = Chore.create(:name => "Laundry", :group => @group )
+      @states2 = %w[Fresh Stinky].map {|s| State.create(:name => s, :chore => @chore2)}
+      @chore2.update(:selected => 2)   
     end
     
     describe "/group/:code" do
@@ -52,10 +51,13 @@ describe "service" do
           last_response.should be_ok
           attributes = JSON.parse(last_response.body)
           chores = attributes["chores"]
+          #puts chores
+          chores[0]["id"].should_not be_nil
           chores[0]["name"].should == "Dishwasher"
           chores[0]["states"][0]["name"].should == "Clean"
           chores[0]["selected"].should == 1
           chores[0]["states"][1]["name"].should == "Dirty"
+          chores[1]["id"].should_not be_nil
           chores[1]["name"].should == "Laundry"
           chores[1]["states"][0]["name"].should == "Fresh"
           chores[1]["states"][1]["name"].should == "Stinky"
@@ -67,9 +69,9 @@ describe "service" do
           last_response.should be_ok
           attributes = JSON.parse(last_response.body)
           chores = attributes["chores"]
-          chores[0]["name"].should == "Dishwasher"
+          chores[0]["id"].should_not be_nil
           chores[0]["selected"].should == 1
-          chores[1]["name"].should == "Laundry"
+          chores[1]["id"].should_not be_nil
           chores[1]["selected"].should == 2
         end
         
@@ -182,18 +184,18 @@ describe "service" do
   end
   
   describe "PUT on /api/v1/group/:code/chore" do
-    before(:each) do
-      Group.create(
+    before :each do
+      @group = Group.create(
         :code   => "ABCDEF",
         :name   => "The Tango Loft"
       )
       
-      chore1 = Chore.create(:name => "Dishwasher", :group => group )
-      %w[Clean Dirty].map {|s| State.create(:name => s, :chore => chore1)}
-      chore1.update(:selected => 1)
-      chore2 = Chore.create(:name => "Laundry", :group => group )
-      %w[Fresh Stinky].map {|s| State.create(:name => s, :chore => chore2)}
-      state = State.first(:name => "Stinky",:chore => chore2)
+      @chore1 = Chore.create(:name => "Dishwasher", :group => @group )
+      %w[Clean Dirty].map {|s| State.create(:name => s, :chore => @chore1)}
+      @chore1.update(:selected => 1)
+      @chore2 = Chore.create(:name => "Laundry", :group => @group )
+      %w[Fresh Stinky].map {|s| State.create(:name => s, :chore => @chore2)}
+      @chore2.update(:selected => 2)   
     end
     
     it "should update the name of a chore"

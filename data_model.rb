@@ -75,6 +75,7 @@ class Chore
   property :selected,       Integer,  :default => 1
   
   has n,    :states
+  has 1,    :selected_state, 'State'
   is :list, :scope => :group_id
 
   def self.accept_params(params,group)
@@ -88,6 +89,7 @@ class Chore
       :only => [:name,:position,:selected],
       :relationships => {
         :states   => { :only => [:name,:position]},
+        :selected_state   => { :only => [:id]},
       }
     )
   end
