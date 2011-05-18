@@ -75,12 +75,11 @@ class Chore
   property :selected,       Integer,  :default => 1
   
   has n,    :states
-  has 1,    :selected_state, 'State'
   is :list, :scope => :group_id
 
-  def self.accept_params(params,group)
+  def self.accept_params(params,group = nil)
     halt error 400, "Chore name cannot be empty" if params["name"].blank?
-    params["group"] = group
+    params["group"] = group if group
     return params    
   end
 
@@ -89,7 +88,6 @@ class Chore
       :only => [:name,:position,:selected],
       :relationships => {
         :states   => { :only => [:name,:position]},
-        :selected_state   => { :only => [:id]},
       }
     )
   end

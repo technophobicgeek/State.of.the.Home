@@ -38,9 +38,14 @@ helpers do
     group
   end
   def find_chore
-    chore = Chore.first(:name => params[:name], :group => find_group)
-    halt error 404, "Chore \"#{params[:name]}\" not found" unless chore
+    chore = Chore.first(:id => params[:id], :group => find_group)
+    halt error 404, "Chore \"#{params[:id]}\" not found" unless chore
     chore
+  end
+  def create_states_for_chore(c_params,chore)
+    c_params["states"].each do |s_params|
+      State.create(State.accept_params(s_params,chore))     
+    end
   end
 end
 
@@ -57,7 +62,6 @@ get '/api/v1/group/:code/chores/all' do
         :only => [:id,:name,:position,:selected],
         :relationships => {
           :states   => { :only => [:name,:position]},
-          :selected_state   => { :only => [:name,:position]},
         }
       }
     }
@@ -75,11 +79,11 @@ get '/api/v1/group/:code/chores/selected' do
   )
 end
 
-get '/api/v1/group/:code/chore/:name' do
+get '/api/v1/group/:code/chore/:id' do
   find_chore.to_json_basic
 end
 
-get '/api/v1/group/:code/chore/:name/selected' do
+get '/api/v1/group/:code/chore/:id/selected' do
   find_chore.to_json(:only => [:selected])
 end
 
@@ -99,9 +103,7 @@ post '/api/v1/group/:code/chore/new' do
   begin
     c_params = Chore.accept_params(JSON.parse(request.body.read),find_group)
     chore = Chore.create c_params
-    c_params["states"].each do |s_params|
-      State.create(State.accept_params(s_params,chore))     
-    end
+    create_states_for_chore(c_params,chore)
     halt error 400, "error creating chore".to_json unless chore.saved?
     chore.to_json_basic
   rescue => e
@@ -114,22 +116,34 @@ put '/api/v1/group/:code' do
   group = find_group
   begin
     body = Group.accept_params(JSON.parse(request.body.read))
-    group.update(body) # TODO if timestamps work
+    group.update body # TODO if timestamps work
     group.to_json
   rescue => e
     error 400, e.message.to_json
   end
 end
 
-put '/api/v1/group/:code/chore/:id/selected' do
+put '/api/v1/group/:code/chore/:id' do
   begin
-    group = Group.first(:code => params[:code])
-    return error 404, "group not found".to_json unless group
-    body = JSON.parse(request.body.read)
+    c_params = Chore.accept_params(JSON.parse(request.body.read))
+    chore = find_chore
+    #chore.update c_params
+    halt error 400, "error updating chore".to_json unless chore.saved?
+    chore.to_json_basic
   rescue => e
     error 400, e.message.to_json
   end
 end
+#
+#put '/api/v1/group/:code/chore/:id/selected' do
+#  begin
+#    group = Group.first(:code => params[:code])
+#    return error 404, "group not found".to_json unless group
+#    body = JSON.parse(request.body.read)
+#  rescue => e
+#    error 400, e.message.to_json
+#  end
+#end
 
 
 # All DELETE requests
