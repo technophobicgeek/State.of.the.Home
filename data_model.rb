@@ -114,7 +114,7 @@ class State
   property :id,             Serial
   property :name,           String,   :key => true
   
-  belongs_to :chore
+  belongs_to  :chore
   is  :list,  :scope => :chore_id
 
   def self.accept_params(params,chore)

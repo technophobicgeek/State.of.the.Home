@@ -1,7 +1,11 @@
-04/12/2011
+05/17/2011
 
-Can we try using ActiveRecord instead of DataMapper here? Might be better for more complex models. We'll see.
+Looks like there's a bug in DataMapper is_list plugin.
 
-Syncing: needs to incorporate 301 modified responses to check for whether a resource has been modified since last time of update.
+TODOS
 
-Members: Should we consider a general user-password login mechanism or just members with nicknames? Think about it.
+* Implement States ordering manually instead of is_list. Should be simple, just update
+  State table completely per chore every time.
+  
+* Add delete method for Chores. Probably not a real delete, just an unlink from Group
+
