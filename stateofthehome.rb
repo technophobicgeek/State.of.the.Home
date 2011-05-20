@@ -37,14 +37,14 @@ helpers do
     halt error 404, "Group \"#{params[:code]}\" not found" unless group
     group
   end
-  def find_chore
-    chore = Chore.first(:id => params[:id], :group => find_group)
-    halt error 404, "Chore \"#{params[:id]}\" not found" unless chore
-    chore
+  def find_task
+    task = Task.first(:id => params[:id], :group => find_group)
+    halt error 404, "Task \"#{params[:id]}\" not found" unless task
+    task
   end
-  def create_states_for_chore(c_params,chore)
+  def create_states_for_task(c_params,task)
     c_params["states"].each do |s_params|
-      State.create(State.accept_params(s_params,chore))     
+      State.create(State.accept_params(s_params,task))     
     end
   end
 end
@@ -54,11 +54,11 @@ get '/api/v1/group/:code' do
   find_group.to_json
 end
 
-get '/api/v1/group/:code/chores/all' do
+get '/api/v1/group/:code/tasks/all' do
   find_group.to_json(
     :only => [:name,:code],
     :relationships => {
-      :chores => {
+      :tasks => {
         :only => [:id,:name,:position,:selected],
         :relationships => {
           :states   => { :only => [:name,:position]},
@@ -68,23 +68,23 @@ get '/api/v1/group/:code/chores/all' do
   )
 end
 
-get '/api/v1/group/:code/chores/selected' do
+get '/api/v1/group/:code/tasks/selected' do
   find_group.to_json(
     :only => [:code],
     :relationships => {
-      :chores => {
+      :tasks => {
         :only => [:id,:selected]
       }
     }
   )
 end
 
-get '/api/v1/group/:code/chore/:id' do
-  find_chore.to_json_basic
+get '/api/v1/group/:code/task/:id' do
+  find_task.to_json_basic
 end
 
-get '/api/v1/group/:code/chore/:id/selected' do
-  find_chore.to_json(:only => [:selected])
+get '/api/v1/group/:code/task/:id/selected' do
+  find_task.to_json(:only => [:selected])
 end
 
 # All POST requests
@@ -99,13 +99,13 @@ post '/api/v1/group/new' do
   end
 end
 
-post '/api/v1/group/:code/chore/new' do
+post '/api/v1/group/:code/task/new' do
   begin
-    c_params = Chore.accept_params(JSON.parse(request.body.read),find_group)
-    chore = Chore.create c_params
-    create_states_for_chore(c_params,chore)
-    halt error 400, "error creating chore".to_json unless chore.saved?
-    chore.to_json_basic
+    c_params = Task.accept_params(JSON.parse(request.body.read),find_group)
+    task = Task.create c_params
+    create_states_for_task(c_params,task)
+    halt error 400, "error creating task".to_json unless task.saved?
+    task.to_json_basic
   rescue => e
     error 400, e.message.to_json
   end
@@ -123,19 +123,19 @@ put '/api/v1/group/:code' do
   end
 end
 
-put '/api/v1/group/:code/chore/:id' do
+put '/api/v1/group/:code/task/:id' do
   begin
-    c_params = Chore.accept_params(JSON.parse(request.body.read))
-    chore = find_chore
-    chore.update c_params
-    halt error 400, "error updating chore".to_json unless chore.saved?
-    chore.to_json_basic
+    c_params = Task.accept_params(JSON.parse(request.body.read))
+    task = find_task
+    task.update c_params
+    halt error 400, "error updating task".to_json unless task.saved?
+    task.to_json_basic
   rescue => e
     error 400, e.message.to_json
   end
 end
 #
-#put '/api/v1/group/:code/chore/:id/selected' do
+#put '/api/v1/group/:code/task/:id/selected' do
 #  begin
 #    group = Group.first(:code => params[:code])
 #    return error 404, "group not found".to_json unless group

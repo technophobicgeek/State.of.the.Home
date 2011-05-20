@@ -13,7 +13,7 @@ require 'json'
 # Interesting ideas to capture
 # Log entries on "state transitions"
 # Log should be publishable from various points: some design pattern?
-# Billing Chore: how do we reset?
+# Billing Task: how do we reset?
 
 class Group
   include DataMapper::Resource
@@ -24,7 +24,7 @@ class Group
   property :created_at,     DateTime
   property :updated_at,     DateTime
   
-  has n,  :chores
+  has n,  :tasks
   has n,  :members
   has 1,  :activity_log
   has 1,  :message_board
@@ -49,8 +49,8 @@ end
 ######################### Tasks #########################
 
 
-# Chores have a specific set of states associated
-class Chore
+# Tasks have a specific set of states associated
+class Task
   include DataMapper::Resource
 
   property :id,             Serial
@@ -62,21 +62,23 @@ class Chore
   
   property :due_date,       DateTime
   property :reset_date,     DateTime
+
   property :done_date,      DateTime
-  
+  property :done,           Boolean,  :default => false  
   property :priority,       Integer,  :default => 0
+  
   property :selected,       Integer,  :default => 1
+  has n,    :states
 
 
   belongs_to  :group
   validates_uniqueness_of :name, :scope => :group_id
 
-  #is :tree, :order => priority
+  is :tree, :order => priority
   
-  has n,    :states
 
   def self.accept_params(params,group = nil)
-    halt error 400, "Chore name cannot be empty" if params["name"].blank?
+    halt error 400, "Task name cannot be empty" if params["name"].blank?
     params["group"] = group if group
     return params    
   end
@@ -98,11 +100,11 @@ class State
   property :name,           String,   :key => true
   property :position,       Integer
   
-  belongs_to  :chore
+  belongs_to  :task
 
-  def self.accept_params(params,chore)
+  def self.accept_params(params,task)
     halt error 400, "State name cannot be empty"  if params["name"].blank?
-    params["chore"] = chore
+    params["task"] = task
     return params    
   end
       
@@ -157,7 +159,7 @@ class ActivityEntry
   property :created_at,      DateTime
 
   belongs_to  :member,      :required => false
-  belongs_to  :chore,       :required => false
+  belongs_to  :task,       :required => false
   belongs_to  :location,    :required => false
   belongs_to  :activity_log
 end
