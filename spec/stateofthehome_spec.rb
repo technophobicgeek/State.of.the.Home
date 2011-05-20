@@ -19,11 +19,11 @@ describe "service" do
         :name   => "The Tango Loft"
       )
       
-      @chore1 = Chore.create(:name => "Dishwasher", :group => @group )
-      @states1 = %w[Clean Dirty].map {|s| State.create(:name => s, :chore => @chore1)}
+      @chore1 = Chore.create(:name => "Dishwasher", :group => @group, :position => 1 )
+      @states1 = %w[Clean Dirty].each_with_index {|s,i| State.create(:name => s, :chore => @chore1,:position => i+1)}
       @chore1.update(:selected => 1)
-      @chore2 = Chore.create(:name => "Laundry", :group => @group )
-      @states2 = %w[Fresh Stinky].map {|s| State.create(:name => s, :chore => @chore2)}
+      @chore2 = Chore.create(:name => "Laundry", :group => @group, :position => 2 )
+      @states2 = %w[Fresh Stinky].each_with_index {|s,i| State.create(:name => s, :chore => @chore2,:position => i+1)}
       @chore2.update(:selected => 2)   
     end
     
@@ -141,8 +141,8 @@ describe "service" do
       post '/api/v1/group/ABCDEF/chore/new', {
         :name  => "Dishwasher",
         :states => [
-          {:name => "Clean"},
-          {:name => "Dirty"},
+          {:name => "Clean",:position => 1},
+          {:name => "Dirty",:position => 2 },
         ]
       }.to_json
       last_response.should be_ok
@@ -200,26 +200,26 @@ describe "service" do
         :name   => "The Tango Loft"
       )
       
-      @chore1 = Chore.create(:name => "Dishwasher", :group => @group )
-      %w[Clean Dirty].map {|s| State.create(:name => s, :chore => @chore1)}
+      @chore1 = Chore.create(:name => "Dishwasher", :group => @group, :position => 1 )
+      @states1 = %w[Clean Dirty].each_with_index {|s,i| State.create(:name => s, :chore => @chore1,:position => i+1)}
       @chore1.update(:selected => 1)
-      @chore2 = Chore.create(:name => "Laundry", :group => @group )
-      %w[Fresh Stinky].map {|s| State.create(:name => s, :chore => @chore2)}
-      @chore2.update(:selected => 2)   
+      @chore2 = Chore.create(:name => "Laundry", :group => @group,:position => 2 )
+      @states2 = %w[Fresh Stinky].each_with_index {|s,i| State.create(:name => s, :chore => @chore2,:position => i+1)}
+      @chore2.update(:selected => 2)  
     end
     
     it "should update a chore" do
       put "/api/v1/group/ABCDEF/chore/#{@chore1.id}", {
         :name  => "Our Dishwasher",
         :states => [
-          {:name => "Sparkling"},
-          {:name => "Dirty"},
+          {:name => "Sparkling",:position => 1},
+          {:name => "Dirty",:position => 2 },
         ]
       }.to_json
       last_response.should be_ok
 
       attributes = JSON.parse(last_response.body)
-      puts attributes
+      #puts attributes
       attributes["name"].should == "Our Dishwasher"
       attributes["states"][0]["name"].should == "Sparkling"
       attributes["states"][0]["position"].should == 1

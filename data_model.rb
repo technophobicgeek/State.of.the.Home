@@ -57,6 +57,7 @@ module Task
       property :name,           String,   :required => true, :unique => :group_id
       property :created_at,     DateTime
       property :updated_at,     DateTime
+      property :position,       Integer
     
       belongs_to  :group
       validates_uniqueness_of :name, :scope => :group_id
@@ -75,7 +76,6 @@ class Chore
   property :selected,       Integer,  :default => 1
   
   has n,    :states
-  is :list, :scope => :group_id
 
   def self.accept_params(params,group = nil)
     halt error 400, "Chore name cannot be empty" if params["name"].blank?
@@ -113,9 +113,9 @@ class State
 
   property :id,             Serial
   property :name,           String,   :key => true
+  property :position,       Integer
   
   belongs_to  :chore
-  is  :list,  :scope => :chore_id
 
   def self.accept_params(params,chore)
     halt error 400, "State name cannot be empty"  if params["name"].blank?

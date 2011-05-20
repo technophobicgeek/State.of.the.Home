@@ -127,7 +127,7 @@ put '/api/v1/group/:code/chore/:id' do
   begin
     c_params = Chore.accept_params(JSON.parse(request.body.read))
     chore = find_chore
-    #chore.update c_params
+    chore.update c_params
     halt error 400, "error updating chore".to_json unless chore.saved?
     chore.to_json_basic
   rescue => e
