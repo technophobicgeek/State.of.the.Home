@@ -22,9 +22,12 @@ describe "service" do
       @task1 = Task.create(:name => "Dishwasher", :group => @group, :position => 1 )
       @states1 = %w[Clean Dirty].each_with_index {|s,i| State.create(:name => s, :task => @task1,:position => i+1)}
       @task1.update(:selected => 1)
+      
       @task2 = Task.create(:name => "Laundry", :group => @group, :position => 2 )
       @states2 = %w[Fresh Stinky].each_with_index {|s,i| State.create(:name => s, :task => @task2,:position => i+1)}
       @task2.update(:selected => 2)
+
+      @task3 = Task.create(:name => "Get milk", :group => @group, :position => 3, :priority => 3 )
       
     end
     
@@ -68,6 +71,11 @@ describe "service" do
           tasks[1]["states"][0]["position"].should == 1
           tasks[1]["states"][1]["position"].should == 2
           tasks[1]["selected"].should == 2
+          
+          tasks[2]["id"].should_not be_nil
+          tasks[2]["name"].should == "Get milk"
+          tasks[2]["priority"].should == 3
+          tasks[2]["states"].should == []
         end
         
         it "should return all tasks and their selected states" do
@@ -204,9 +212,13 @@ describe "service" do
       @task1 = Task.create(:name => "Dishwasher", :group => @group, :position => 1 )
       @states1 = %w[Clean Dirty].each_with_index {|s,i| State.create(:name => s, :task => @task1,:position => i+1)}
       @task1.update(:selected => 1)
-      @task2 = Task.create(:name => "Laundry", :group => @group,:position => 2 )
+      
+      @task2 = Task.create(:name => "Laundry", :group => @group, :position => 2 )
       @states2 = %w[Fresh Stinky].each_with_index {|s,i| State.create(:name => s, :task => @task2,:position => i+1)}
-      @task2.update(:selected => 2)  
+      @task2.update(:selected => 2)
+
+      @task3 = Task.create(:name => "Get milk", :group => @group, :position => 3, :priority => 3 )
+       
     end
     
     it "should update a task" do
@@ -228,26 +240,18 @@ describe "service" do
       attributes["states"][1]["position"].should == 2
     end    
    
- 
+    
+    it "should delete a task" do
+      delete "/api/v1/group/ABCDEF/task/#{@task1.id}"
+      last_response.should be_ok
+
+      get "/api/v1/group/ABCDEF/task/#{@task1.id}"      
+      last_response.status.should == 404
+      last_response.body.should == "Task #{@task1.id} not found"        
+
+    end
+  
   end
   
-  describe "DEL on /api/v1/group/:code/task" do
-    before(:each) do
-      Group.create(
-        :code   => "ABCDEF",
-        :name   => "The Tango Loft"
-      )
-      
-      task1 = Task.create(:name => "Dishwasher", :group => group )
-      %w[Clean Dirty].map {|s| State.create(:name => s, :task => task1)}
-      task1.update(:selected => 1)
-      task2 = Task.create(:name => "Laundry", :group => group )
-      %w[Fresh Stinky].map {|s| State.create(:name => s, :task => task2)}
-      state = State.first(:name => "Stinky",:task => task2)
-    end
-    
-    it "should delete a task" 
-   
- 
-  end 
+
 end

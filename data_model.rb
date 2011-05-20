@@ -68,7 +68,7 @@ class Task
   property :priority,       Integer,  :default => 0
   
   property :selected,       Integer,  :default => 1
-  has n,    :states
+  has n,   :states
 
 
   belongs_to  :group
@@ -85,7 +85,7 @@ class Task
 
   def to_json_basic
     self.to_json(
-      :only => [:name,:position,:selected],
+      #:only => [:name,:position,:selected],
       :relationships => {
         :states   => { :only => [:name,:position]},
       }

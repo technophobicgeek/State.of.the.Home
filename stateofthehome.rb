@@ -39,7 +39,7 @@ helpers do
   end
   def find_task
     task = Task.first(:id => params[:id], :group => find_group)
-    halt error 404, "Task \"#{params[:id]}\" not found" unless task
+    halt error 404, "Task #{params[:id]} not found" unless task
     task
   end
   def create_states_for_task(c_params,task)
@@ -59,7 +59,7 @@ get '/api/v1/group/:code/tasks/all' do
     :only => [:name,:code],
     :relationships => {
       :tasks => {
-        :only => [:id,:name,:position,:selected],
+        #:only => [:id,:name,:position,:selected],
         :relationships => {
           :states   => { :only => [:name,:position]},
         }
@@ -134,24 +134,17 @@ put '/api/v1/group/:code/task/:id' do
     error 400, e.message.to_json
   end
 end
-#
-#put '/api/v1/group/:code/task/:id/selected' do
-#  begin
-#    group = Group.first(:code => params[:code])
-#    return error 404, "group not found".to_json unless group
-#    body = JSON.parse(request.body.read)
-#  rescue => e
-#    error 400, e.message.to_json
-#  end
-#end
+
+delete '/api/v1/group/:code/task/:id' do
+  begin
+    task = find_task
+    task.states.map {|s| s.destroy!}
+    res = task.destroy!
+    "Task #{task.name} destroyed" if res
+    halt error 400, "error destroying task".to_json unless res
+  rescue => e
+    error 400, e.message.to_json
+  end
+end
 
 
-# All DELETE requests
-#Delete a group only if the number of members drops to 0?
-#delete '/api/v1/group/:code' do |code|
-#  group = Group.first(:code => code)
-#  return error 404, "group not found".to_json unless group
-#  group.destroy
-#  status 200
-#  body "Deleted group #{code}"
-#end
