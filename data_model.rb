@@ -25,7 +25,6 @@ class Group
   property :updated_at,     DateTime
   
   has n,  :chores
-  has n,  :todos
   has n,  :members
   has 1,  :activity_log
   has 1,  :message_board
@@ -49,31 +48,30 @@ end
 
 ######################### Tasks #########################
 
-module Task
-  def self.included(base)
-    base.class_eval do      
-      include DataMapper::Resource
-      
-      property :name,           String,   :required => true, :unique => :group_id
-      property :created_at,     DateTime
-      property :updated_at,     DateTime
-      property :position,       Integer
-    
-      belongs_to  :group
-      validates_uniqueness_of :name, :scope => :group_id
-    end
-  end
-end
 
 # Chores have a specific set of states associated
 class Chore
   include DataMapper::Resource
-  include Task
 
   property :id,             Serial
+  property :name,           String,   :required => true, :unique => :group_id
+  property :position,       Integer
+  
+  property :created_at,     DateTime
+  property :updated_at,     DateTime
+  
   property :due_date,       DateTime
   property :reset_date,     DateTime
+  property :done_date,      DateTime
+  
+  property :priority,       Integer,  :default => 0
   property :selected,       Integer,  :default => 1
+
+
+  belongs_to  :group
+  validates_uniqueness_of :name, :scope => :group_id
+
+  #is :tree, :order => priority
   
   has n,    :states
 
@@ -91,21 +89,6 @@ class Chore
       }
     )
   end
-end
-
-
-
-# Todos are arbitrary tasks
-class Todo
-  include DataMapper::Resource
-  include Task
-  
-  property :id,             Serial
-  property :due_date,       Date
-  property :priority,       Integer,  :default => 0
-  property :done_date,      Date
-  
-  is :tree, :order => priority
 end
 
 class State
@@ -175,7 +158,6 @@ class ActivityEntry
 
   belongs_to  :member,      :required => false
   belongs_to  :chore,       :required => false
-  belongs_to  :todo,        :required => false
   belongs_to  :location,    :required => false
   belongs_to  :activity_log
 end

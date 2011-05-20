@@ -24,7 +24,8 @@ describe "service" do
       @chore1.update(:selected => 1)
       @chore2 = Chore.create(:name => "Laundry", :group => @group, :position => 2 )
       @states2 = %w[Fresh Stinky].each_with_index {|s,i| State.create(:name => s, :chore => @chore2,:position => i+1)}
-      @chore2.update(:selected => 2)   
+      @chore2.update(:selected => 2)
+      
     end
     
     describe "/group/:code" do
