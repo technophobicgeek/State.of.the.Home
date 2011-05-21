@@ -12,8 +12,7 @@ require 'json'
 module JSONHelper
   def to_collection
     params = self.attributes.delete_if{|k,v| v.nil?}
-    tasks = self.tasks.map{|t| t.to_collection}
-    params[:tasks] = tasks unless tasks == []
+    self.collect_associations params
     return params
   end
 
@@ -55,6 +54,12 @@ class Group
   
   def set_auto_properties
     self.code ||= $bitly.shorten("http://stateofthehome.heroku.com/api/v1/group/#{self.id}").user_hash
+  end
+  
+  def collect_associations(params)
+    tasks = self.tasks.map{|t| t.to_collection}
+    params[:tasks] = tasks unless tasks == []
+    return params
   end
   
   def to_collection
