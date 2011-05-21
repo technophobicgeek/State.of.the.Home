@@ -42,6 +42,30 @@ describe "service" do
         attributes["name"].should == "The Tango Loft"
         attributes["created_at"].should_not be_blank      
         attributes["updated_at"].should_not be_blank
+
+        tasks = attributes["tasks"]
+        #puts tasks
+        tasks[0]["id"].should_not be_nil
+        tasks[0]["name"].should == "Dishwasher"
+        tasks[0]["states"][0]["name"].should == "Clean"
+        tasks[0]["states"][0]["position"].should == 1
+        tasks[0]["selected"].should == 1
+        tasks[0]["states"][1]["name"].should == "Dirty"
+        tasks[0]["states"][1]["position"].should == 2
+        
+        tasks[1]["id"].should_not be_nil
+        tasks[1]["name"].should == "Laundry"
+        tasks[1]["states"][0]["name"].should == "Fresh"
+        tasks[1]["states"][1]["name"].should == "Stinky"
+        tasks[1]["states"][0]["position"].should == 1
+        tasks[1]["states"][1]["position"].should == 2
+        tasks[1]["selected"].should == 2
+        
+        tasks[2]["id"].should_not be_nil
+        tasks[2]["name"].should == "Get milk"
+        tasks[2]["priority"].should == 3
+        tasks[2]["states"].should be_nil
+
       end
       
       it "should return a 404 for a group that doesn't exist" do
@@ -50,66 +74,18 @@ describe "service" do
         last_response.body.should == "Group \"foo\" not found"        
       end
       
-      describe "/task" do
+      describe "/task" do       
         
-        it "should return all tasks and all their states with selections" do
-          get '/api/v1/group/ABCDEF/tasks/all'
+        it "should return a task with a specific id" do
+          get "/api/v1/group/ABCDEF/task/#{@task1.id}"      
           last_response.should be_ok
           attributes = JSON.parse(last_response.body)
-          tasks = attributes["tasks"]
-          #puts tasks
-          tasks[0]["id"].should_not be_nil
-          tasks[0]["name"].should == "Dishwasher"
-          tasks[0]["states"][0]["name"].should == "Clean"
-          tasks[0]["states"][0]["position"].should == 1
-          tasks[0]["selected"].should == 1
-          tasks[0]["states"][1]["name"].should == "Dirty"
-          tasks[0]["states"][1]["position"].should == 2
-          
-          tasks[1]["id"].should_not be_nil
-          tasks[1]["name"].should == "Laundry"
-          tasks[1]["states"][0]["name"].should == "Fresh"
-          tasks[1]["states"][1]["name"].should == "Stinky"
-          tasks[1]["states"][0]["position"].should == 1
-          tasks[1]["states"][1]["position"].should == 2
-          tasks[1]["selected"].should == 2
-          
-          tasks[2]["id"].should_not be_nil
-          tasks[2]["name"].should == "Get milk"
-          tasks[2]["priority"].should == 3
-          tasks[2]["states"].should == []
+          attributes["name"].should == "Dishwasher"
+          attributes["states"][0]["name"].should == "Clean"
+          attributes["states"][1]["name"].should == "Dirty"
+          attributes["selected"].should == 1
         end
-        
-        it "should return all tasks and their selected states" do
-          get '/api/v1/group/ABCDEF/tasks/selected'               
-          last_response.should be_ok
-          attributes = JSON.parse(last_response.body)
-          tasks = attributes["tasks"]
-          tasks[0]["id"].should_not be_nil
-          tasks[0]["selected"].should == 1
-          tasks[1]["id"].should_not be_nil
-          tasks[1]["selected"].should == 2
-        end
-        
-        describe "/:name" do
-          it "should return a task with a specific id" do
-            get "/api/v1/group/ABCDEF/task/#{@task1.id}"      
-            last_response.should be_ok
-            attributes = JSON.parse(last_response.body)
-            attributes["name"].should == "Dishwasher"
-            attributes["states"][0]["name"].should == "Clean"
-            attributes["states"][1]["name"].should == "Dirty"
-            attributes["selected"].should == 1
-          end
-      
-          it "should return the selected state of a task with a specific id" do
-            get "/api/v1/group/ABCDEF/task/#{@task2.id}/selected"               
-            last_response.should be_ok
-            attributes = JSON.parse(last_response.body)
-            attributes["selected"].should == 2
-          end
-          
-        end
+    
         
       end
       

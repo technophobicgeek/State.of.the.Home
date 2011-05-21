@@ -4,7 +4,7 @@ require 'datamapper'
 require 'dm-core'
 require 'dm-migrations'
 require 'dm-validations'
-require 'dm-serializer'
+#require 'dm-serializer'
 require 'dm-timestamps'
 require 'dm-is-list'
 require 'dm-is-tree'
@@ -49,6 +49,10 @@ class Group
     tasks = self.tasks.map{|t| t.to_collection}
     params[:tasks] = tasks unless tasks == []
     return params
+  end
+
+  def to_json
+    self.to_collection.to_json
   end
   
 end
@@ -98,6 +102,10 @@ class Task
     return params
   end
   
+  def to_json
+    self.to_collection.to_json
+  end
+   
   def to_json_basic
     self.to_json(
       #:only => [:name,:position,:selected],
@@ -127,7 +135,10 @@ class State
     params = self.attributes.delete_if{|k,v| v.nil?}
     return params
   end
-  
+  def to_json
+    self.to_collection.to_json
+  end
+   
 end
 
 

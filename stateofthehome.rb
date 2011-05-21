@@ -54,38 +54,10 @@ get '/api/v1/group/:code' do
   find_group.to_json
 end
 
-get '/api/v1/group/:code/tasks/all' do
-  find_group.to_json(
-    :only => [:name,:code],
-    :relationships => {
-      :tasks => {
-        #:only => [:id,:name,:position,:selected],
-        :relationships => {
-          :states   => { :only => [:name,:position]},
-        }
-      }
-    }
-  )
-end
-
-get '/api/v1/group/:code/tasks/selected' do
-  find_group.to_json(
-    :only => [:code],
-    :relationships => {
-      :tasks => {
-        :only => [:id,:selected]
-      }
-    }
-  )
-end
-
 get '/api/v1/group/:code/task/:id' do
-  find_task.to_json_basic
+  find_task.to_json
 end
 
-get '/api/v1/group/:code/task/:id/selected' do
-  find_task.to_json(:only => [:selected])
-end
 
 # All POST requests
 post '/api/v1/group/new' do
@@ -105,7 +77,7 @@ post '/api/v1/group/:code/task/new' do
     task = Task.create c_params
     create_states_for_task(c_params,task)
     halt error 400, "error creating task".to_json unless task.saved?
-    task.to_json_basic
+    task.to_json
   rescue => e
     error 400, e.message.to_json
   end
@@ -129,7 +101,7 @@ put '/api/v1/group/:code/task/:id' do
     task = find_task
     task.update c_params
     halt error 400, "error updating task".to_json unless task.saved?
-    task.to_json_basic
+    task.to_json
   rescue => e
     error 400, e.message.to_json
   end
