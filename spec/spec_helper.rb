@@ -4,6 +4,7 @@ require 'rspec'
 gem 'rack-test'
 require 'rack/test'
 require 'date'
+require 'json'
 
 set :environment, :test
 

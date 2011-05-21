@@ -28,6 +28,8 @@ describe "service" do
       @task2.update(:selected => 2)
 
       @task3 = Task.create(:name => "Get milk", :group => @group, :position => 3, :priority => 3 )
+
+      #puts @group.to_collection.to_json
       
     end
     

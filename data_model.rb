@@ -44,6 +44,13 @@ class Group
     self.code ||= $bitly.shorten("http://stateofthehome.heroku.com/api/v1/group/#{self.id}").user_hash
   end
   
+  def to_collection
+    params = self.attributes.delete_if{|k,v| v.nil?}
+    tasks = self.tasks.map{|t| t.to_collection}
+    params[:tasks] = tasks unless tasks == []
+    return params
+  end
+  
 end
 
 ######################### Tasks #########################
@@ -56,6 +63,7 @@ class Task
   property :id,             Serial
   property :name,           String,   :required => true, :unique => :group_id
   property :position,       Integer
+  property :ttype,          String
   
   property :created_at,     DateTime
   property :updated_at,     DateTime
@@ -83,6 +91,13 @@ class Task
     return params    
   end
 
+  def to_collection
+    params = self.attributes.delete_if{|k,v| v.nil?}
+    states = self.states.map{|t| t.to_collection}
+    params[:states] = states unless states == []
+    return params
+  end
+  
   def to_json_basic
     self.to_json(
       #:only => [:name,:position,:selected],
@@ -107,7 +122,12 @@ class State
     params["task"] = task
     return params    
   end
-      
+  
+  def to_collection
+    params = self.attributes.delete_if{|k,v| v.nil?}
+    return params
+  end
+  
 end
 
 
