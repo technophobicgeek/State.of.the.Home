@@ -44,7 +44,7 @@ describe "service" do
         attributes["updated_at"].should_not be_blank
 
         tasks = attributes["tasks"]
-        #puts tasks
+        puts tasks
         tasks[0]["id"].should_not be_nil
         tasks[0]["name"].should == "Dishwasher"
         tasks[0]["states"][0]["name"].should == "Clean"
@@ -80,6 +80,7 @@ describe "service" do
           get "/api/v1/group/ABCDEF/task/#{@task1.id}"      
           last_response.should be_ok
           attributes = JSON.parse(last_response.body)
+          puts attributes
           attributes["name"].should == "Dishwasher"
           attributes["states"][0]["name"].should == "Clean"
           attributes["states"][1]["name"].should == "Dirty"

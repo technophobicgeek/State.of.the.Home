@@ -12,15 +12,18 @@ require 'json'
 module JSONHelper
   def to_collection
     params = self.attributes.delete_if{|k,v| v.nil?}
-    self.collect_associations params
-    return params
+    return self.collect_associations(params)
   end
 
-  def to_json
-    self.to_collection.to_json
+  def collect_associations(params)
+    params
   end
   
+  def to_json
+    self.to_collection.to_json
+  end 
 end
+
 # Interesting ideas to capture
 # Log entries on "state transitions"
 # Log should be publishable from various points: some design pattern?
@@ -61,14 +64,7 @@ class Group
     params[:tasks] = tasks unless tasks == []
     return params
   end
-  
-  def to_collection
-    params = self.attributes.delete_if{|k,v| v.nil?}
-    tasks = self.tasks.map{|t| t.to_collection}
-    params[:tasks] = tasks unless tasks == []
-    return params
-  end
- 
+
 end
 
 ######################### Tasks #########################
@@ -110,8 +106,7 @@ class Task
     return params    
   end
 
-  def to_collection
-    params = self.attributes.delete_if{|k,v| v.nil?}
+  def collect_associations(params)
     states = self.states.map{|t| t.to_collection}
     params[:states] = states unless states == []
     return params
@@ -133,11 +128,6 @@ class State
     halt error 400, "State name cannot be empty"  if params["name"].blank?
     params["task"] = task
     return params    
-  end
-  
-  def to_collection
-    params = self.attributes.delete_if{|k,v| v.nil?}
-    return params
   end
   
 end
