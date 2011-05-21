@@ -4,12 +4,24 @@ require 'datamapper'
 require 'dm-core'
 require 'dm-migrations'
 require 'dm-validations'
-#require 'dm-serializer'
 require 'dm-timestamps'
 require 'dm-is-list'
 require 'dm-is-tree'
 require 'json'
 
+module JSONHelper
+  def to_collection
+    params = self.attributes.delete_if{|k,v| v.nil?}
+    tasks = self.tasks.map{|t| t.to_collection}
+    params[:tasks] = tasks unless tasks == []
+    return params
+  end
+
+  def to_json
+    self.to_collection.to_json
+  end
+  
+end
 # Interesting ideas to capture
 # Log entries on "state transitions"
 # Log should be publishable from various points: some design pattern?
@@ -17,6 +29,7 @@ require 'json'
 
 class Group
   include DataMapper::Resource
+  include JSONHelper
 
   property :id,             Serial
   property :name,           String, :required => true
@@ -50,11 +63,7 @@ class Group
     params[:tasks] = tasks unless tasks == []
     return params
   end
-
-  def to_json
-    self.to_collection.to_json
-  end
-  
+ 
 end
 
 ######################### Tasks #########################
@@ -63,6 +72,7 @@ end
 # Tasks have a specific set of states associated
 class Task
   include DataMapper::Resource
+  include JSONHelper
 
   property :id,             Serial
   property :name,           String,   :required => true, :unique => :group_id
@@ -101,23 +111,12 @@ class Task
     params[:states] = states unless states == []
     return params
   end
-  
-  def to_json
-    self.to_collection.to_json
-  end
-   
-  def to_json_basic
-    self.to_json(
-      #:only => [:name,:position,:selected],
-      :relationships => {
-        :states   => { :only => [:name,:position]},
-      }
-    )
-  end
+    
 end
 
 class State
   include DataMapper::Resource
+  include JSONHelper
 
   property :id,             Serial
   property :name,           String,   :key => true
@@ -135,10 +134,7 @@ class State
     params = self.attributes.delete_if{|k,v| v.nil?}
     return params
   end
-  def to_json
-    self.to_collection.to_json
-  end
-   
+  
 end
 
 
