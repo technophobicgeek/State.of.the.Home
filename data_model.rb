@@ -21,8 +21,9 @@ module JSONHelper
   
   def serialize_associations(params)
     self.associations.each do |assoc|
-      values = self.send(assoc).map{|t| t.to_collection}
-      params[assoc] = values unless values == []
+      values = self.send(assoc)
+      values = values.map{|t| t.to_collection} if values
+      params[assoc] = values unless (values.empty? || values.nil?)
     end
     params
   end
@@ -84,22 +85,20 @@ class Task
   property :id,             Serial
   property :name,           String,   :required => true, :unique => :group_id
   property :position,       Integer
-  property :ttype,          String
+  property :task_type,      String
   
   property :created_at,     DateTime
   property :updated_at,     DateTime
   
-  property :due_date,       DateTime
-  property :reset_date,     DateTime
-
-  property :done_date,      DateTime
   property :done,           Boolean,  :default => false  
   property :priority,       Integer,  :default => 0
   
   property :selected,       Integer,  :default => 1
   has n,   :states
 
-
+  has 1,   :timing
+  has 1,   :periodicity
+  
   belongs_to  :group
   validates_uniqueness_of :name, :scope => :group_id
 
@@ -113,7 +112,7 @@ class Task
   end
 
   def associations
-    [:states]
+    [:states,:timing,:periodicity]
   end
     
 end
@@ -136,7 +135,30 @@ class State
   
 end
 
+class Timing
+  include DataMapper::Resource
+  include JSONHelper
 
+  property :id,             Serial
+
+  property :due_date,       DateTime
+  property :reset_date,     DateTime
+  property :done_date,      DateTime
+
+  belongs_to  :task 
+end
+
+class Periodicity
+  include DataMapper::Resource
+  include JSONHelper
+
+  property :id,             Serial
+
+  property :freq_key,       String # "daily", "weekly", "monthly"
+  property :freq_val,       Integer
+
+  belongs_to  :task 
+end
 
 ######################### Users #########################
 
