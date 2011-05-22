@@ -98,6 +98,7 @@ class Task
 
   has 1,   :timing
   has 1,   :periodicity
+  has 1,   :location
   
   belongs_to  :group
   validates_uniqueness_of :name, :scope => :group_id
@@ -112,7 +113,7 @@ class Task
   end
 
   def associations
-    [:states,:timing,:periodicity]
+    [:states,:timing,:periodicity,:location]
   end
     
 end
@@ -207,7 +208,7 @@ class ActivityEntry
   property :created_at,      DateTime
 
   belongs_to  :member,      :required => false
-  belongs_to  :task,       :required => false
+  belongs_to  :task,        :required => false
   belongs_to  :location,    :required => false
   belongs_to  :activity_log
 end
@@ -225,11 +226,15 @@ end
 
 class Location
   include DataMapper::Resource
+  include JSONHelper
 
   property :id,           Serial
   property :name,         String,  :required => true, :key => true
+  property :latitude,     Float
+  property :longitude,    Float
   
   belongs_to    :group,   :key => true
+  belongs_to    :task,    :required => false
 end
 
 ############################################################
