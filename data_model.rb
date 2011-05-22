@@ -12,10 +12,18 @@ require 'json'
 module JSONHelper
   def to_collection
     params = self.attributes.delete_if{|k,v| v.nil?}
-    return self.collect_associations(params)
+    self.serialize_associations(params)
   end
 
-  def collect_associations(params)
+  def collect_associations
+    []
+  end
+  
+  def serialize_associations(params)
+    self.collect_associations.each do |assoc|
+      values = self.send(assoc).map{|t| t.to_collection}
+      params[assoc] = values unless values == []
+    end
     params
   end
   
@@ -59,12 +67,10 @@ class Group
     self.code ||= $bitly.shorten("http://stateofthehome.heroku.com/api/v1/group/#{self.id}").user_hash
   end
   
-  def collect_associations(params)
-    tasks = self.tasks.map{|t| t.to_collection}
-    params[:tasks] = tasks unless tasks == []
-    return params
+  def collect_associations
+    [:tasks]
   end
-
+   
 end
 
 ######################### Tasks #########################
@@ -106,10 +112,8 @@ class Task
     return params    
   end
 
-  def collect_associations(params)
-    states = self.states.map{|t| t.to_collection}
-    params[:states] = states unless states == []
-    return params
+  def collect_associations
+    [:states]
   end
     
 end
