@@ -50,8 +50,12 @@ helpers do
 end
 
 # All GET requests
-get '/api/v1/group/:code' do
+get '/api/v1/group/:code/all' do
   find_group.to_json
+end
+
+get '/api/v1/group/:code' do
+  find_group.to_json(:deep => false)
 end
 
 get '/api/v1/group/:code/task/:id' do

@@ -9,27 +9,32 @@ require 'dm-is-list'
 require 'dm-is-tree'
 require 'json'
 
+
 module JSONHelper
-  def to_collection
+  def to_collection(deep)
     params = self.attributes.delete_if{|k,v| v.nil?}
-    self.serialize_associations(params)
+    params = self.serialize_associations(params,deep) if deep
+    params
   end
 
   def associations
     []
   end
   
-  def serialize_associations(params)
+  # Instead of passing deep around, could we use t.instance_eval(@deep = true)?
+  def serialize_associations(params,deep)
     self.associations.each do |assoc|
       values = self.send(assoc)
-      values = values.map{|t| t.to_collection} if values
+      values = values.map{|t| t.to_collection(deep)} if values
       params[assoc] = values unless (values.empty? || values.nil?)
     end
     params
   end
   
-  def to_json
-    self.to_collection.to_json
+  def to_json(options = {})
+    deep = options[:deep]
+    deep = true if deep.nil?
+    self.to_collection(deep).to_json
   end 
 end
 
@@ -69,7 +74,7 @@ class Group
   end
   
   def associations
-    [:tasks]
+    [:tasks,:members,:locations]
   end
    
 end
@@ -165,6 +170,7 @@ end
 
 class Member
   include DataMapper::Resource
+  include JSONHelper
 
   property :id,           Serial
   property :name,         String,  :required => true, :unique => :group_id
@@ -180,6 +186,7 @@ end
 
 class Message
   include DataMapper::Resource
+  include JSONHelper
   
   property :id,         Serial
   property :text,       Text,     :required => true
@@ -191,6 +198,7 @@ end
 
 class MessageBoard
   include DataMapper::Resource
+  include JSONHelper
   
   property :id,  Serial
 
@@ -202,6 +210,7 @@ end
 
 class ActivityEntry
   include DataMapper::Resource
+  include JSONHelper
   
   property :id,    Serial
   property :text,  Text,    :required => false
@@ -215,6 +224,7 @@ end
 
 class ActivityLog
   include DataMapper::Resource
+  include JSONHelper
 
   property :id,             Serial
   

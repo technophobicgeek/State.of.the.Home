@@ -34,8 +34,8 @@ describe "service" do
     end
     
     describe "/group/:code" do
-      it "should return a group by code" do
-        get '/api/v1/group/ABCDEF'
+      it "should return all info about a group by code" do
+        get '/api/v1/group/ABCDEF/all'
         last_response.should be_ok
         attributes = JSON.parse(last_response.body)
         attributes["code"].should == "ABCDEF"
@@ -67,6 +67,19 @@ describe "service" do
         tasks[2]["states"].should be_nil
 
       end
+      
+      it "should return only info about a group by code" do
+        get '/api/v1/group/ABCDEF'
+        last_response.should be_ok
+        attributes = JSON.parse(last_response.body)
+        attributes["code"].should == "ABCDEF"
+        attributes["name"].should == "The Tango Loft"
+        attributes["created_at"].should_not be_blank      
+        attributes["updated_at"].should_not be_blank
+
+        attributes["tasks"].should be_nil
+      end
+      
       
       it "should return a 404 for a group that doesn't exist" do
         get '/api/v1/group/foo'
