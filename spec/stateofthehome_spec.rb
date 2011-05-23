@@ -29,10 +29,7 @@ describe "service" do
       @states2 = %w[Fresh Stinky].each_with_index {|s,i| State.create(:name => s, :task => @task2,:position => i+1)}
       @task2.update(:selected => 2)
 
-      @task3 = Task.create(:name => "Get milk", :group => @group, :position => 3, :priority => 3 )
-
-      #puts @group.to_collection.to_json
-      
+      @task3 = Task.create(:name => "Get milk", :group => @group, :position => 3, :priority => 3 )  
     end
     
     describe "/group/:code" do
@@ -89,8 +86,7 @@ describe "service" do
         last_response.body.should == "Group \"foo\" not found"        
       end
       
-      describe "/task" do       
-        
+      describe "/task" do              
         it "should return a task with a specific id" do
           get "/api/v1/group/ABCDEF/task/#{@task1.id}"      
           last_response.should be_ok
@@ -100,10 +96,23 @@ describe "service" do
           attributes["states"][0]["name"].should == "Clean"
           attributes["states"][1]["name"].should == "Dirty"
           attributes["selected"].should == 1
-        end
-    
-        
+        end   
       end
+     
+      describe "/member" do
+        before(:each) do
+          @member1 = Member.create(:name => "Raj",   :group => @group)
+          @member2 = Member.create(:name => "Dave",  :group => @group)
+        end
+        it "should return a member with a specific id" do
+          get "/api/v1/group/ABCDEF/member/#{@member2.id}"      
+          last_response.should be_ok
+          attributes = JSON.parse(last_response.body)
+          #puts attributes
+          attributes["name"].should == "Dave"
+        end   
+      end
+
       
     end
     

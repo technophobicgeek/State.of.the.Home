@@ -45,6 +45,12 @@ helpers do
   def find_task
     find_group_relation Task
   end
+  def find_location
+    find_group_relation Location
+  end
+  def find_member
+    find_group_relation Member
+  end
   def create_states_for_task(c_params,task)
     c_params["states"].each do |s_params|
       State.create(State.accept_params(s_params,task))     
@@ -65,6 +71,12 @@ get '/api/v1/group/:code/task/:id' do
   find_task.to_json
 end
 
+get '/api/v1/group/:code/location/:id' do
+  find_location.to_json
+end
+get '/api/v1/group/:code/member/:id' do
+  find_member.to_json
+end
 
 # All POST requests
 post '/api/v1/group/new' do
