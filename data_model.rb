@@ -182,6 +182,15 @@ class Member
   
   belongs_to :group
   validates_uniqueness_of :name, :scope => :group_id
+
+  def self.accept_params(params,group)
+    %[name].each do |v|
+      halt error 400, "#{self.class} #{v} cannot be empty"  if params[v].blank?
+    end
+    params["group"] = group
+    return params    
+  end
+
 end
 
 ######################### Messages ########################
@@ -230,12 +239,11 @@ class Location
   belongs_to    :group,   :key => true
   belongs_to    :task,    :required => false
 
-  def self.accept_params(params,group, task = nil)
+  def self.accept_params(params,group)
     %[name latitude longitude].each do |v|
       halt error 400, "Location #{v} cannot be empty"  if params[v].blank?
     end
     params["group"] = group
-    params["task"] =  task if task
     return params    
   end
   

@@ -87,6 +87,31 @@ post '/api/v1/group/:code/task/new' do
   end
 end
 
+
+post '/api/v1/group/:code/location/new' do
+  begin
+    l_params = Location.accept_params(JSON.parse(request.body.read),find_group)
+    location = Location.create l_params
+    halt error 400, "error creating location".to_json unless location.saved?
+    location.to_json
+  rescue => e
+    error 400, e.message.to_json
+  end
+end
+
+
+
+post '/api/v1/group/:code/member/new' do
+  begin
+    l_params = Member.accept_params(JSON.parse(request.body.read),find_group)
+    member = Member.create l_params
+    halt error 400, "error creating member".to_json unless member.saved?
+    member.to_json
+  rescue => e
+    error 400, e.message.to_json
+  end
+end
+
 # All PUT requests
 put '/api/v1/group/:code' do 
   group = find_group
