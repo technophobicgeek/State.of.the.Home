@@ -55,8 +55,8 @@ class Group
   
   has n,  :tasks
   has n,  :members
-  has 1,  :activity_log
-  has 1,  :message_board
+  has n,  :activity_entries
+  has n,  :messages
   has n,  :locations
 
   validates_uniqueness_of :code
@@ -82,7 +82,9 @@ end
 ######################### Tasks #########################
 
 
-# Tasks have a specific set of states associated
+# Tasks have a location, timing, periodicity and a set of states, all of which
+# are optional. they also have parent and children tasks
+
 class Task
   include DataMapper::Resource
   include JSONHelper
@@ -193,18 +195,9 @@ class Message
   property :created_at, DateTime
 
   belongs_to  :member
-  belongs_to  :message_board
+  belongs_to  :group
 end
 
-class MessageBoard
-  include DataMapper::Resource
-  include JSONHelper
-  
-  property :id,  Serial
-
-  belongs_to :group
-  has n,     :messages
-end
 
 ######################### Activities #######################
 
@@ -219,18 +212,9 @@ class ActivityEntry
   belongs_to  :member,      :required => false
   belongs_to  :task,        :required => false
   belongs_to  :location,    :required => false
-  belongs_to  :activity_log
-end
-
-class ActivityLog
-  include DataMapper::Resource
-  include JSONHelper
-
-  property :id,             Serial
-  
   belongs_to  :group
-  has n,      :activity_entries
 end
+
 
 ######################### Locations ########################
 
@@ -239,12 +223,22 @@ class Location
   include JSONHelper
 
   property :id,           Serial
-  property :name,         String,  :required => true, :key => true
-  property :latitude,     Float
-  property :longitude,    Float
+  property :name,         String
+  property :latitude,     Float,  :required => true
+  property :longitude,    Float,  :required => true
   
   belongs_to    :group,   :key => true
   belongs_to    :task,    :required => false
+
+  def self.accept_params(params,group, task = nil)
+    %[name latitude longitude].each do |v|
+      halt error 400, "Location #{v} cannot be empty"  if params[v].blank?
+    end
+    params["group"] = group
+    params["task"] =  task if task
+    return params    
+  end
+  
 end
 
 ############################################################
