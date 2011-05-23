@@ -37,15 +37,13 @@ helpers do
     halt error 404, "Group \"#{params[:code]}\" not found" unless group
     group
   end
-  def find_group_reln(rel)
+  def find_group_relation(rel)
     v = rel.first(:id => params[:id], :group => find_group)
     halt error 404, "#{rel.name} #{params[:id]} not found" unless v
     v
   end
   def find_task
-    v = Task.first(:id => params[:id], :group => find_group)
-    halt error 404, "Task #{params[:id]} not found" unless v
-    v
+    find_group_relation Task
   end
   def create_states_for_task(c_params,task)
     c_params["states"].each do |s_params|
