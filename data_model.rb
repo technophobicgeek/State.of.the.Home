@@ -184,7 +184,7 @@ class Member
   validates_uniqueness_of :name, :scope => :group_id
 
   def self.accept_params(params,group)
-    %[name].each do |v|
+    %w[name].each do |v|
       halt error 400, "#{self.class} #{v} cannot be empty"  if params[v].blank?
     end
     params["group"] = group
@@ -240,7 +240,7 @@ class Location
   belongs_to    :task,    :required => false
 
   def self.accept_params(params,group)
-    %[name latitude longitude].each do |v|
+    %w[name latitude longitude].each do |v|
       halt error 400, "Location #{v} cannot be empty"  if params[v].blank?
     end
     params["group"] = group

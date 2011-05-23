@@ -5,15 +5,17 @@ def app
 end
 
 describe "service" do
-  before do
+  before(:each) do
     State.destroy
     Task.destroy
     Group.destroy
+    Location.destroy
+    Member.destroy
   end
   
   # GETs
   describe "GET on /api/v1" do
-    before do
+    before(:each) do
       @group = Group.create(
         :code   => "ABCDEF",
         :name   => "The Tango Loft"
@@ -108,11 +110,6 @@ describe "service" do
   end
 
   describe "POST on /api/v1/group" do
-    before do
-      State.destroy
-      Task.destroy
-      Group.destroy
-    end
     it "should create a group" do
       post '/api/v1/group/new', {
         :name  => "The Tango Loft"
@@ -153,6 +150,31 @@ describe "service" do
       attributes["states"][0]["name"].should == "Clean"
       attributes["states"][1]["name"].should == "Dirty"
     end
+
+    it "should create a new location for a group" do
+      post '/api/v1/group/ABCDEF/location/new', {
+        :name  => "Home",
+        :latitude => "10.573",
+        :longitude => "50.224"
+      }.to_json
+      last_response.should be_ok
+    
+      attributes = JSON.parse(last_response.body)
+      attributes["name"].should == "Home"
+      attributes["latitude"].should == 10.573
+      attributes["longitude"].should == 50.224
+    end
+    
+    it "should create a new member for a group" do
+      post '/api/v1/group/ABCDEF/member/new', {
+        :name  => "Raj",
+      }.to_json
+      last_response.should be_ok
+    
+      attributes = JSON.parse(last_response.body)
+      attributes["name"].should == "Raj"
+    end
+
   end
   
   describe "PUT on /api/v1/group/:code" do

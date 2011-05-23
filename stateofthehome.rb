@@ -38,9 +38,9 @@ helpers do
     group
   end
   def find_task
-    task = Task.first(:id => params[:id], :group => find_group)
-    halt error 404, "Task #{params[:id]} not found" unless task
-    task
+    v = Task.first(:id => params[:id], :group => find_group)
+    halt error 404, "Task #{params[:id]} not found" unless v
+    v
   end
   def create_states_for_task(c_params,task)
     c_params["states"].each do |s_params|
@@ -99,12 +99,10 @@ post '/api/v1/group/:code/location/new' do
   end
 end
 
-
-
 post '/api/v1/group/:code/member/new' do
   begin
-    l_params = Member.accept_params(JSON.parse(request.body.read),find_group)
-    member = Member.create l_params
+    m_params = Member.accept_params(JSON.parse(request.body.read),find_group)
+    member = Member.create m_params
     halt error 400, "error creating member".to_json unless member.saved?
     member.to_json
   rescue => e
