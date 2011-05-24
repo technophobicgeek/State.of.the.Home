@@ -67,6 +67,11 @@ get '/api/v1/group/:code' do
   find_group.to_json(:deep => false)
 end
 
+get '/api/v1/group/:code/tasks' do
+  group = find_group
+end
+
+
 get '/api/v1/group/:code/task/:id' do
   find_task.to_json
 end

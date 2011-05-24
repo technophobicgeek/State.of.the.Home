@@ -1,0 +1,20 @@
+/ In div task_page
+/ For every task in @tasks
+/   if the task is a leaf task
+/     display in class task_leaf div
+/   else if it has subtasks
+/     display in class task_node div
+!!!     
+%html
+  %head
+    %title Tasks
+  
+  %body
+    .task_page
+      - @tasks.each do |t|
+        - if t.leaf?
+          .task_leaf
+            .task_details
+              %span.task_name t.name
+        - else
+          .task_node

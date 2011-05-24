@@ -148,6 +148,11 @@ class Task
   def associations
     [:states,:timing,:periodicity,:location]
   end
+  
+  def leaf?
+    c = self.children
+    c.nil? || c.empty?
+  end
     
 end
 
@@ -265,11 +270,11 @@ class Location
   belongs_to    :group,   :key => true
   belongs_to    :task,    :required => false
 
-  def self.accept_params(params,group)
+  def self.accept_params(params,group = nil)
     %w[name latitude longitude].each do |v|
       halt error 400, "Location #{v} cannot be empty"  if params[v].blank?
     end
-    params["group"] = group
+    params["group"] = group if group
     return params    
   end
   
