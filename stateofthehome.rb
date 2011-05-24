@@ -4,6 +4,7 @@ require 'bitly'
 require 'simplegeo'
 require 'yaml'
 require 'sinatra'
+require 'haml'
 
 require_relative 'data_model'
 
@@ -27,7 +28,7 @@ configure :development do |config|
   config.also_reload "data_model.rb"
 end
 
-before do
+before '/api/*' do
   content_type 'application/json'
 end
 
@@ -58,6 +59,20 @@ helpers do
   end
 end
 
+# Pages
+
+# Get all tasks with no parent tasks
+get '/group/:code/tasks' do
+  @tasks = Task.all(:group => find_group, :parent => nil)
+  haml :tasks
+end
+
+get '/group/:code/task/:id/children' do
+  @tasks = find_task.children
+  haml :tasks
+end
+
+
 # All GET requests
 get '/api/v1/group/:code/all' do
   find_group.to_json
@@ -66,11 +81,6 @@ end
 get '/api/v1/group/:code' do
   find_group.to_json(:deep => false)
 end
-
-get '/api/v1/group/:code/tasks' do
-  group = find_group
-end
-
 
 get '/api/v1/group/:code/task/:id' do
   find_task.to_json

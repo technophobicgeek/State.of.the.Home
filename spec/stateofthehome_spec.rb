@@ -78,7 +78,13 @@ describe "service" do
 
         attributes["tasks"].should be_nil
       end
-      
+
+      it "should return only info about a group by code" do
+        get '/group/ABCDEF/tasks'
+        last_response.should be_ok
+        puts last_response.body
+      end
+            
       
       it "should return a 404 for a group that doesn't exist" do
         get '/api/v1/group/foo'
