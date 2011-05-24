@@ -59,6 +59,13 @@ helpers do
   end
 end
 
+# CSS
+
+get '/application.css' do
+  header 'Content-Type' => 'text/css; charset=utf-8'
+  sass :style
+end
+
 # Pages
 
 # Get all tasks with no parent tasks
