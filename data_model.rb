@@ -86,6 +86,17 @@ end
 # are optional. they also have parent and children tasks
 
 class Task
+
+  class Dependency
+    include DataMapper::Resource
+  
+    storage_names[:default] = 'task_dependencies'
+    
+    belongs_to :blockedby, 'Task', :key => true
+    belongs_to :blockerof, 'Task', :key => true
+  end
+
+
   include DataMapper::Resource
   include JSONHelper
 
@@ -110,8 +121,23 @@ class Task
   belongs_to  :group
   validates_uniqueness_of :name, :scope => :group_id
 
+  # Subtasks and supertasks
   is :tree, :order => priority
   
+  # Dependency graph: can we enforce the following rules? 
+  # 1) Only tasks which are siblings can have dependencies
+  # 2) No cycles
+  has n, :dep_blockedby_tasks, 'Task::Dependency', :child_key => [:blockerof_id]
+  has n, :dep_blockerof_tasks, 'Task::Dependency', :child_key => [:blockedby_id]
+
+  has n, :blockedby_tasks, self,
+    :through => :dep_blockedby_tasks,
+    :via     => :blockedby
+
+  has n, :blockerof_tasks, self,
+    :through => :dep_blockerof_tasks,
+    :via     => :blockerof
+
 
   def self.accept_params(params,group = nil)
     halt error 400, "Task name cannot be empty" if params["name"].blank?
@@ -183,11 +209,11 @@ class Member
   belongs_to :group
   validates_uniqueness_of :name, :scope => :group_id
 
-  def self.accept_params(params,group)
+  def self.accept_params(params,group = nil)
     %w[name].each do |v|
       halt error 400, "#{self.class} #{v} cannot be empty"  if params[v].blank?
     end
-    params["group"] = group
+    params["group"] = group if group
     return params    
   end
 

@@ -152,9 +152,9 @@ end
 
 put '/api/v1/group/:code/member/:id' do
   begin
-    c_params = Member.accept_params(JSON.parse(request.body.read))
+    m_params = Member.accept_params(JSON.parse(request.body.read))
     member = find_member
-    member.update c_params
+    member.update m_params
     halt error 400, "error updating member".to_json unless member.saved?
     member.to_json
   rescue => e
