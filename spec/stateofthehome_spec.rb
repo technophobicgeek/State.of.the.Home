@@ -111,9 +111,7 @@ describe "service" do
           #puts attributes
           attributes["name"].should == "Dave"
         end   
-      end
-
-      
+      end      
     end
     
   end
@@ -255,7 +253,6 @@ describe "service" do
       last_response.should be_ok
 
       attributes = JSON.parse(last_response.body)
-      #puts attributes
       attributes["name"].should == "Our Dishwasher"
       attributes["states"][0]["name"].should == "Sparkling"
       attributes["states"][0]["position"].should == 1
@@ -263,7 +260,16 @@ describe "service" do
       attributes["states"][1]["position"].should == 2
     end    
    
-    
+    it "should update a member" do
+      put "/api/v1/group/ABCDEF/member/#{@member1.id}", {
+        :name  => "Van",
+      }.to_json
+      last_response.should be_ok
+
+      attributes = JSON.parse(last_response.body)
+      attributes["name"].should == "Van"
+    end    
+       
     it "should delete a task" do
       delete "/api/v1/group/ABCDEF/task/#{@task1.id}"
       last_response.should be_ok

@@ -149,6 +149,19 @@ put '/api/v1/group/:code/task/:id' do
   end
 end
 
+
+put '/api/v1/group/:code/member/:id' do
+  begin
+    c_params = Member.accept_params(JSON.parse(request.body.read))
+    member = find_member
+    member.update c_params
+    halt error 400, "error updating member".to_json unless member.saved?
+    member.to_json
+  rescue => e
+    error 400, e.message.to_json
+  end
+end
+
 delete '/api/v1/group/:code/task/:id' do
   begin
     task = find_task
