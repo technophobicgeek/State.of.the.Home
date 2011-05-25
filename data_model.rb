@@ -5,7 +5,6 @@ require 'dm-core'
 require 'dm-migrations'
 require 'dm-validations'
 require 'dm-timestamps'
-require 'dm-is-list'
 require 'dm-is-tree'
 require 'json'
 
@@ -272,7 +271,7 @@ class Location
   property :latitude,     Float,  :required => true
   property :longitude,    Float,  :required => true
   
-  belongs_to    :group,   :key => true
+  belongs_to    :group
   belongs_to    :task,    :required => false
 
   def self.accept_params(params,group = nil)
