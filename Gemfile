@@ -17,6 +17,8 @@ gem 'sqlite3'
 gem 'sinatra'
 gem 'bitly'
 gem 'simplegeo'
+gem 'haml'
+gem 'sass'
 
 #client
 gem 'json'

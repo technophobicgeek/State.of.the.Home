@@ -6,10 +6,14 @@
 /     display in class task_node div
 
 .task_page
+  .title_bar
+    %span Back
+    %span= @title || 'Tasks'
+    %span Add
+    
   - @tasks.each do |t|
     - if t.leaf?
       .task_leaf
-        .task_details
-          %span.task_name= t.name
+        .task_name= t.name
     - else
       .task_node

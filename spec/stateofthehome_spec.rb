@@ -16,10 +16,7 @@ describe "service" do
   # GETs
   describe "GET on /api/v1" do
     before(:each) do
-      @group = Group.create(
-        :code   => "ABCDEF",
-        :name   => "The Tango Loft"
-      )
+      @group = Group.create(:code   => "ABCDEF",:name   => "The Tango Loft")
       
       @task1 = Task.create(:name => "Dishwasher", :group => @group, :position => 1 )
       @states1 = %w[Clean Dirty].each_with_index {|s,i| State.create(:name => s, :task => @task1,:position => i+1)}
@@ -43,7 +40,7 @@ describe "service" do
         attributes["updated_at"].should_not be_blank
 
         tasks = attributes["tasks"]
-        #puts tasks
+        puts tasks
         tasks[0]["id"].should_not be_nil
         tasks[0]["name"].should == "Dishwasher"
         tasks[0]["states"][0]["name"].should == "Clean"
@@ -82,7 +79,7 @@ describe "service" do
       it "should return only info about a group by code" do
         get '/group/ABCDEF/tasks'
         last_response.should be_ok
-        puts last_response.body
+        #puts last_response.body
       end
             
       

@@ -54,6 +54,7 @@ class Group
   property :updated_at,     DateTime
   
   has n,  :tasks
+  has 1,  :root_task, 'Task'
   has n,  :members
   has n,  :activity_entries
   has n,  :messages
@@ -71,6 +72,11 @@ class Group
   
   def set_auto_properties
     self.code ||= $bitly.shorten("http://stateofthehome.heroku.com/api/v1/group/#{self.id}").user_hash
+    self.root_task = Task.create(:name => "Tasks" )
+    task1 = Task.create(:name => "TODOs")
+    task2 = Task.create(:name => "Chores")
+    task3 = Task.create(:name => "Recurring")
+    self.tasks << task1 << task2 << task3
   end
   
   def associations
@@ -288,3 +294,16 @@ DataMapper.finalize
 #DataMapper::Logger.new($stdout, :debug)
 DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/project.db")
 DataMapper.auto_migrate!
+
+@group = Group.create(:code   => "ABCDEF",:name   => "The Tango Loft")
+
+@task1 = Task.create(:name => "Dishwasher", :group => @group, :position => 1 )
+@states1 = %w[Clean Dirty].each_with_index {|s,i| State.create(:name => s, :task => @task1,:position => i+1)}
+@task1.update(:selected => 1)
+
+@task2 = Task.create(:name => "Laundry", :group => @group, :position => 2 )
+@states2 = %w[Fresh Stinky].each_with_index {|s,i| State.create(:name => s, :task => @task2,:position => i+1)}
+@task2.update(:selected => 2)
+
+@task3 = Task.create(:name => "Get milk", :group => @group, :position => 3, :priority => 3 )  
+

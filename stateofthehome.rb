@@ -5,6 +5,7 @@ require 'simplegeo'
 require 'yaml'
 require 'sinatra'
 require 'haml'
+require 'sass'
 
 require_relative 'data_model'
 
@@ -62,8 +63,8 @@ end
 # CSS
 
 get '/application.css' do
-  header 'Content-Type' => 'text/css; charset=utf-8'
-  sass :style
+  headers 'Content-Type' => 'text/css; charset=utf-8'
+  scss :style
 end
 
 # Pages

@@ -1,0 +1,15 @@
+.task_leaf {
+  height: 200px;
+  width: 200px;
+  float: left;
+  text-align: center;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  background-color: #cccccc;
+  margin: 40px;
+  
+  .task_name {
+    padding:40px;
+    font-family:georgia,garamond,serif;
+  }
+}
