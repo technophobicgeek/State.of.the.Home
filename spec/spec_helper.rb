@@ -1,4 +1,4 @@
-require_relative '../stateofthehome'
+require File.join(File.dirname(__FILE__), '../stateofthehome')
 gem 'rspec'
 require 'rspec'
 gem 'rack-test'

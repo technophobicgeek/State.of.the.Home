@@ -7,8 +7,7 @@ require 'sinatra'
 require 'haml'
 require 'sass'
 
-require_relative 'data_model'
-
+require File.join(File.dirname(__FILE__), 'data_model')
 configure do
   # Load API info
   $apikeys = YAML::load_file("apikeys.yml")
