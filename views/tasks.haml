@@ -6,8 +6,9 @@
 /     display in class task_node div
 
 .task_page
-  .title_bar
-    %span.link Back
+  .title_bar   
+    %a{:href => @back}
+      %span.link Back
     %span.title= @title || 'Tasks'
     %span.link Add
     

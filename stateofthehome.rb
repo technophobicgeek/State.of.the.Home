@@ -78,6 +78,13 @@ end
 get '/group/:code/task/:id/children' do
   @parent = find_task 
   @tasks = @parent.children
+  
+  if @parent.parent
+    @back = "/group/#{@parent.group.code}/task/#{@parent.parent.id}/children"
+  else
+    @back = "/group/#{@parent.group.code}/tasks"
+  end
+  
   @title = @parent.name
   haml :tasks
 end
