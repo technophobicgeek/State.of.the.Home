@@ -4,7 +4,7 @@
 }
 
 .title_bar {
-  background-color: #889988;
+  background-color: #96cdcd;
   span.link {
     text-align: center;
     -webkit-appearance: push-button;
@@ -21,17 +21,16 @@
   text-align: center;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
-  background-color: #889988;
+  background-color: #96cdcd;
   margin: 40px;
   a {
-      color: 330000;
+      color: #330000;
       text-decoration: none;
       .task_count {
         -webkit-appearance: push-button;
         -moz-appearance: button;
         width: 60%;
         margin: auto;
-        color: #330000; 
       }
       &:hover{text-decoration: none;}
       &:visited{ text-decoration: underline;}
@@ -46,5 +45,5 @@
 }
 
 .task_node {
-  background-color: #888877;
+  background-color: #8CDD81;
 }
