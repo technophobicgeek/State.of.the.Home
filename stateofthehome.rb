@@ -71,7 +71,7 @@ end
 # Get all tasks with no parent tasks
 get '/group/:code/tasks' do
   @group = find_group
-  @tasks = Task.all(:group => @group, :parent => @group.root_task)
+  @tasks = @group.root_task.children
   haml :tasks
 end
 
