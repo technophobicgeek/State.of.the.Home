@@ -1,15 +1,50 @@
-.task_leaf {
+.task_page {
+  width : 750px;
+  margin: auto;
+}
+
+.title_bar {
+  background-color: #889988;
+  span.link {
+    text-align: center;
+    -webkit-appearance: push-button;
+    -moz-appearance: button;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    margin: auto;      
+  }
+}
+.task_leaf,.task_node {
   height: 200px;
   width: 200px;
   float: left;
   text-align: center;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
-  background-color: #cccccc;
+  background-color: #889988;
   margin: 40px;
-  
+  a {
+      color: 330000;
+      text-decoration: none;
+      .task_count {
+        -webkit-appearance: push-button;
+        -moz-appearance: button;
+        width: 60%;
+        margin: auto;
+        color: #330000; 
+      }
+      &:hover{text-decoration: none;}
+      &:visited{ text-decoration: underline;}
+      &:link{ text-decoration: none;}
+      &:active{text-decoration: none;}
+  }
   .task_name {
     padding:40px;
     font-family:georgia,garamond,serif;
+
   }
+}
+
+.task_node {
+  background-color: #888877;
 }

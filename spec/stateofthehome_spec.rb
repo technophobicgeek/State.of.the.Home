@@ -26,7 +26,7 @@ describe "service" do
       @states2 = %w[Fresh Stinky].each_with_index {|s,i| State.create(:name => s, :task => @task2,:position => i+1)}
       @task2.update(:selected => 2)
 
-      @task3 = Task.create(:name => "Get milk", :group => @group, :position => 3, :priority => 3 )  
+      @task3 = Task.create(:name => "Make tea", :group => @group, :position => 3, :priority => 3 )  
     end
     
     describe "/group/:code" do
@@ -42,25 +42,28 @@ describe "service" do
         tasks = attributes["tasks"]
         puts tasks
         tasks[0]["id"].should_not be_nil
-        tasks[0]["name"].should == "Dishwasher"
-        tasks[0]["states"][0]["name"].should == "Clean"
-        tasks[0]["states"][0]["position"].should == 1
-        tasks[0]["selected"].should == 1
-        tasks[0]["states"][1]["name"].should == "Dirty"
-        tasks[0]["states"][1]["position"].should == 2
-        
+        tasks[0]["name"].should == "Tasks"
+
         tasks[1]["id"].should_not be_nil
-        tasks[1]["name"].should == "Laundry"
-        tasks[1]["states"][0]["name"].should == "Fresh"
-        tasks[1]["states"][1]["name"].should == "Stinky"
+        tasks[1]["name"].should == "Dishwasher"
+        tasks[1]["states"][0]["name"].should == "Clean"
         tasks[1]["states"][0]["position"].should == 1
+        tasks[1]["selected"].should == 1
+        tasks[1]["states"][1]["name"].should == "Dirty"
         tasks[1]["states"][1]["position"].should == 2
-        tasks[1]["selected"].should == 2
         
         tasks[2]["id"].should_not be_nil
-        tasks[2]["name"].should == "Get milk"
-        tasks[2]["priority"].should == 3
-        tasks[2]["states"].should be_nil
+        tasks[2]["name"].should == "Laundry"
+        tasks[2]["states"][0]["name"].should == "Fresh"
+        tasks[2]["states"][1]["name"].should == "Stinky"
+        tasks[2]["states"][0]["position"].should == 1
+        tasks[2]["states"][1]["position"].should == 2
+        tasks[2]["selected"].should == 2
+        
+        tasks[3]["id"].should_not be_nil
+        tasks[3]["name"].should == "Make tea"
+        tasks[3]["priority"].should == 3
+        tasks[3]["states"].should be_nil
 
       end
       
@@ -241,7 +244,7 @@ describe "service" do
       @states2 = %w[Fresh Stinky].each_with_index {|s,i| State.create(:name => s, :task => @task2,:position => i+1)}
       @task2.update(:selected => 2)
 
-      @task3 = Task.create(:name => "Get milk", :group => @group, :position => 3, :priority => 3 )
+      @task3 = Task.create(:name => "Make tea", :group => @group, :position => 3, :priority => 3 )
        
     end
     

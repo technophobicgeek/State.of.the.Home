@@ -7,13 +7,17 @@
 
 .task_page
   .title_bar
-    %span Back
-    %span= @title || 'Tasks'
-    %span Add
+    %span.link Back
+    %span.title= @title || 'Tasks'
+    %span.link Add
     
   - @tasks.each do |t|
     - if t.leaf?
       .task_leaf
         .task_name= t.name
+        .task_state= t.selected_state.name if t.selected_state
     - else
       .task_node
+        .task_name= t.name
+        %a{:href => "/group/#{t.group.code}/task/#{t.id}/children"}
+          .task_count= "#{t.children.size} subtasks"
