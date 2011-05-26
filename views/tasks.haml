@@ -5,21 +5,21 @@
 /   else if it has subtasks
 /     display in class task_node div
 
-.task_page
-  .title_bar   
-    %a{:href => @back}
-      %span.link Back
-    %span.title= @title || 'Tasks'
-    %span.link Add
-  
-  .container  
-    - @tasks.each do |t|
-      - if t.leaf?
-        .task_leaf
-          .task_name= t.name
-          .task_state= t.selected_state.name if t.selected_state
-      - else
-        .task_node
-          .task_name= t.name
-          %a{:href => "/group/#{t.group.code}/task/#{t.id}/children"}
-            .task_count= "#{t.children.size} subtasks"
+.container
+  %nav.span-24.last
+    .span-8
+      %a{:href => @back} Back
+    .span-8.title= @title || 'Tasks'
+    .span-8.last Add
+
+.container  
+  - @tasks.each do |t|
+    - if t.leaf?
+      .task_leaf
+        %h3.task_name= t.name
+        .task_state= t.selected_state.name if t.selected_state
+    - else
+      .task_node
+        %h3.task_name= t.name
+        %a{:href => "/group/#{t.group.code}/task/#{t.id}/children"}
+          .task_count= "#{t.children.size} subtasks"

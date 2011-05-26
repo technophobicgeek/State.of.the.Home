@@ -1,22 +1,19 @@
 body {
-  background-color: #2D3B31;  
+  background-color: #2D3B31;
+  font-family: "Century Gothic", sans-serif;
 }
 
-.task_page {
-  margin: auto;
+a { 
+  color: #330000;
+  text-decoration: none;
+  &:hover{text-decoration: underline;}
+  &:visited{ text-decoration: none;}
+  &:link{ text-decoration: none;}
+  &:active{text-decoration: none;}
 }
 
-
-.title_bar {
+nav.span-24 {
   background-color: #9ABD8B;
-  span.link {
-    text-align: center;
-    -webkit-appearance: push-button;
-    -moz-appearance: button;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    margin: auto;      
-  }
 }
 .task_leaf,.task_node {
   height: 200px;
@@ -26,10 +23,10 @@ body {
   -moz-border-radius: 20px;
   -webkit-border-radius: 20px;
   background-color: #FF8620;
+  background-image: -moz-linear-gradient(#FF8620, #FFBE43);
+  background-image: -webkit-linear-gradient(#FF8620, #FFBE43);
   margin: 40px;
   a {
-      color: #330000;
-      text-decoration: none;
       .task_count {
         -webkit-appearance: push-button;
         -moz-appearance: button;
@@ -37,18 +34,8 @@ body {
         margin: auto;
         background-color: #FFE9A3;
       }
-      &:hover{text-decoration: none;}
-      &:visited{ text-decoration: underline;}
-      &:link{ text-decoration: none;}
-      &:active{text-decoration: none;}
   }
   .task_name {
     padding:40px;
-    font-family:georgia,garamond,serif;
-
   }
-}
-
-.task_node {
-  background-color: #FFBE43;
 }
