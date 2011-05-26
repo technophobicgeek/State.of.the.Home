@@ -1,10 +1,14 @@
+body {
+  background-color: #2D3B31;  
+}
+
 .task_page {
-  width : 750px;
   margin: auto;
 }
 
+
 .title_bar {
-  background-color: #8EE5EE;
+  background-color: #9ABD8B;
   span.link {
     text-align: center;
     -webkit-appearance: push-button;
@@ -21,7 +25,7 @@
   text-align: center;
   -moz-border-radius: 20px;
   -webkit-border-radius: 20px;
-  background-color: #8EE5EE;
+  background-color: #FF8620;
   margin: 40px;
   a {
       color: #330000;
@@ -31,6 +35,7 @@
         -moz-appearance: button;
         width: 60%;
         margin: auto;
+        background-color: #FFE9A3;
       }
       &:hover{text-decoration: none;}
       &:visited{ text-decoration: underline;}
@@ -45,5 +50,5 @@
 }
 
 .task_node {
-  background-color: #8CDD81;
+  background-color: #FFBE43;
 }
