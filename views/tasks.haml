@@ -16,7 +16,7 @@
     - @tasks.each do |t|
       - if t.leaf?
         .task_leaf
-          %h4.task_name= t.name
+          .task_name= t.name
           .task_state= t.selected_state.name if t.selected_state
       - else
         .task_node
