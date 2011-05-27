@@ -1,6 +1,10 @@
 body {
-  background-color: #2D3B31;
   font-family: "Century Gothic", sans-serif;
+  background-color: #25251A;
+}
+
+.title{
+  color: #F2D49B;
 }
 
 a { 
@@ -12,10 +16,7 @@ a {
   &:active{text-decoration: none;}
 }
 
-nav.span-24 {
-  background-color: #9ABD8B;
-}
-.task_leaf,.task_node {
+.task_node {
   height: 200px;
   width: 200px;
   float: left;
@@ -23,7 +24,7 @@ nav.span-24 {
   -moz-border-radius: 20px;
   -webkit-border-radius: 20px;
   background-color: #FF8620;
-  background-image: -moz-linear-gradient(#FF8620, #FFBE43);
+  background-image: -moz-linear-gradient(#A66832, #D99D55);
   background-image: -webkit-linear-gradient(#FF8620, #FFBE43);
   margin: 40px;
   a {
