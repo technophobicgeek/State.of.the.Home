@@ -16,17 +16,22 @@ a {
   &:active{text-decoration: none;}
 }
 
+.task_container{
+  height: 240px;
+  width: 240px;
+  float: left;
+}
+
 .task_node {
   height: 200px;
   width: 200px;
-  float: left;
+  margin: 20px;
   text-align: center;
   -moz-border-radius: 20px;
   -webkit-border-radius: 20px;
+  background: -moz-linear-gradient(#FF8620, #D99D55);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FF8620), to(#D99D55));
   background-color: #FF8620;
-  background-image: -moz-linear-gradient(#A66832, #D99D55);
-  background-image: -webkit-linear-gradient(#FF8620, #FFBE43);
-  margin: 40px;
   a {
       .task_count {
         -webkit-appearance: push-button;

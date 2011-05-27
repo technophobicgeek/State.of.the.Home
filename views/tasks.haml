@@ -7,20 +7,21 @@
 
 .container
   %nav.span-24.last
-    .span-4.prepend-2.append-2
+    .span-4.append-2
       %a{:href => @back} Back
     .span-4.prepend-2.append-2
       %h2.title= @title || 'Tasks'
-    .span-4.prepend-2.append-2.last
+    .span-4.prepend-2.append-3.last
       %a{:href => @back} Add
 
 .container  
   - @tasks.each do |t|
-    .task_node
-      - if t.leaf?
-        %h3.task_name= t.name
-        .task_state= t.selected_state.name if t.selected_state
-      - else
-        %h3.task_name= t.name
-        %a{:href => "/group/#{t.group.code}/task/#{t.id}/children"}
-          .task_count= "#{t.children.size} subtasks"
+    .task_container
+      .task_node
+        - if t.leaf?
+          %h3.task_name= t.name
+          .task_state= t.selected_state.name if t.selected_state
+        - else
+          %h3.task_name= t.name
+          %a{:href => "/group/#{t.group.code}/task/#{t.id}/children"}
+            .task_count= "#{t.children.size} subtasks"

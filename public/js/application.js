@@ -1,7 +1,7 @@
 (function() {
   $(function() {
-    $(".task_node").sortable();
-    $(".task_node").disableSelection();
+    $(".task_container").sortable();
+    $(".task_container").disableSelection();
     $("nav a").button();
   });
 }).call(this);
