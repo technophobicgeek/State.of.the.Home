@@ -40,7 +40,7 @@ describe "service" do
         attributes["updated_at"].should_not be_blank
 
         tasks = attributes["tasks"]
-        puts tasks
+        #puts tasks
         tasks[0]["id"].should_not be_nil
         tasks[0]["name"].should == "Tasks"
 

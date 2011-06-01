@@ -12,16 +12,21 @@
     .span-4.prepend-2.append-2
       %h2.title= @title || 'Tasks'
     .span-4.prepend-2.append-3.last
-      %a{:href => @back} Add
+      %a{:href => @add_task} Add
 
-.container  
-  - @tasks.each do |t|
-    .task_container
-      .task_node
-        - if t.leaf?
-          %h3.task_name= t.name
-          .task_state= t.selected_state.name if t.selected_state
-        - else
-          %h3.task_name= t.name
-          %a{:href => "/group/#{t.group.code}/task/#{t.id}/children"}
-            .task_count= "#{t.children.size} subtasks"
+.container
+  %ul.task_list
+    - @tasks.each do |t|
+      %li.task_container
+        .task_node
+          - if t.leaf?
+            %h3.task_name= t.name
+            - unless t.states.empty?
+              %form.task_state
+                %select.styled.state_select{:name => "states"}
+                  - t.states.each do |s|
+                    %option{:value => s.name}= s.name
+          - else
+            %h3.task_name= t.name
+            %a{:href => "/group/#{t.group.code}/task/#{t.id}/children"}
+              .task_count= "#{t.children.size} subtasks"

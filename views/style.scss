@@ -16,11 +16,15 @@ a {
   &:active{text-decoration: none;}
 }
 
-.task_container{
-  height: 240px;
-  width: 240px;
-  float: left;
+.task_list{
+  list-style-type: none;
+  .task_container{
+    height: 240px;
+    width: 240px;
+    float: left;
+  }  
 }
+
 
 .task_node {
   height: 200px;
@@ -32,16 +36,17 @@ a {
   background: -moz-linear-gradient(#FF8620, #D99D55);
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FF8620), to(#D99D55));
   background-color: #FF8620;
-  a {
-      .task_count {
-        -webkit-appearance: push-button;
-        -moz-appearance: button;
-        width: 60%;
-        margin: auto;
-        background-color: #FFE9A3;
-      }
+  a{
+    .task_count {
+      -webkit-appearance: button;
+      -moz-appearance: button;
+      width: 60%;
+      margin: auto;
+      background-color: #FFE9A3;
+    }
   }
   .task_name {
     padding:40px;
   }
 }
+

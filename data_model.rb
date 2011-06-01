@@ -25,7 +25,7 @@ module JSONHelper
     self.associations.each do |assoc|
       values = self.send(assoc)
       values = values.map{|t| t.to_collection(deep)} if values
-      params[assoc] = values unless (values.empty? || values.nil?)
+      params[assoc] = values unless (values.nil? || values.empty?)
     end
     params
   end
@@ -290,64 +290,67 @@ DataMapper.finalize
 
 # Set up database logs
 #DataMapper::Logger.new($stdout, :debug)
-DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/project.db")
-DataMapper.auto_migrate!
+#DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/project.db")
+#DataMapper.auto_migrate!
 
-group = Group.create(:code   => "ABCDEF",:name   => "The Tango Loft")
-root = group.root_task
+def create_sample_data
+  
+  group = Group.create(:code   => "ABCDEF",:name   => "The Tango Loft")
+  root = group.root_task
+  
+  task_p = Task.create(:name => "Kill Bill", :group => group, :position => 3, :priority => 3, :parent => root  )  
+  
+  task_p = Task.create(:name => "AJ", :group => group, :position => 3, :priority => 3, :parent => root  )  
+  
+  task = Task.create(:name => "Slingbox", :group => group, :position => 1, :priority => 3, :parent => task_p)  
+  task = Task.create(:name => "Cell booster", :group => group, :position => 2, :priority => 3, :parent => task_p )  
+  task = Task.create(:name => "Discuss expense app", :group => group, :position => 3, :priority => 3, :parent => task_p )  
+  
+  
+  task = Task.create(:name => "Laundry", :group => group, :position => 4, :parent => task_p  )
+  %w[Fresh Stinky].each_with_index {|s,i| State.create(:name => s, :task=> task,:position => i+1)}
+  task.update(:selected => 2)
+  
+  
+  task_p = Task.create(:name => "AJ", :group => group, :position => 3, :priority => 3, :parent => root  )  
+  
+  task = Task.create(:name => "Slingbox", :group => group, :position => 1, :priority => 3, :parent => task_p)  
+  task = Task.create(:name => "Cell booster", :group => group, :position => 2, :priority => 3, :parent => task_p )  
+  task = Task.create(:name => "Discuss expense app", :group => group, :position => 3, :priority => 3, :parent => task_p )  
+  
+  
+  task_p = Task.create(:name => "Out", :group => group, :position => 3, :priority => 3, :parent => root  )  
+  
+  task = Task.create(:name => "Medicine", :group => group, :position => 1, :priority => 3, :parent => task_p)  
+  task = Task.create(:name => "Mail Netflix", :group => group, :position => 2, :priority => 3, :parent => task_p )  
+  task_p = Task.create(:name => "Bank", :group => group, :position => 3, :priority => 3, :parent => task_p )  
+  
+  task = Task.create(:name => "deposit", :group => group, :position => 1, :priority => 3, :parent => task_p)  
+  task = Task.create(:name => "temp card", :group => group, :position => 2, :priority => 3, :parent => task_p )  
+  task = Task.create(:name => "get accts", :group => group, :position => 2, :priority => 3, :parent => task_p )  
+  
+  task_p = Task.create(:name => "Misc", :group => group, :position => 3, :priority => 3, :parent => root  )  
+  
+  task = Task.create(:name => "Paint doorbell", :group => group, :position => 1, :priority => 3, :parent => task_p)  
+  task = Task.create(:name => "test blender", :group => group, :position => 2, :priority => 3, :parent => task_p )  
+  task = Task.create(:name => "drawer bottom", :group => group, :position => 2, :priority => 3, :parent => task_p )  
+  
+  task_p = Task.create(:name => "Misc LGF", :group => group, :position => 3, :priority => 3, :parent => root  )  
+  
+  task = Task.create(:name => "search popup", :group => group, :position => 1, :priority => 3, :parent => task_p)  
+  task = Task.create(:name => "search pane scrolling", :group => group, :position => 2, :priority => 3, :parent => task_p )  
+  task = Task.create(:name => "popup size #525", :group => group, :position => 2, :priority => 3, :parent => task_p )  
+  
+  
+  task_p = Task.create(:name => "Chores", :group => group, :position => 3, :priority => 3, :parent => root  )
+  
+  task = Task.create(:name => "Dishwasher", :group => group, :position => 1, :parent => task_p )
+  %w[Clean Dirty].each_with_index {|s,i| State.create(:name => s, :task=> task,:position => i+1)}
+  task.update(:selected => 1)
+  
+  task_p = Task.create(:name => "Make tea", :group => group, :position => 3, :priority => 3, :parent => task_p  )  
+  
+  task = Task.create(:name => "Get milk", :group => group, :position => 1, :priority => 3, :parent => task_p)  
+  task = Task.create(:name => "Boil water", :group => group, :position => 2, :priority => 3, :parent => task_p )  
 
-task_p = Task.create(:name => "Kill Bill", :group => group, :position => 3, :priority => 3, :parent => root  )  
-
-task_p = Task.create(:name => "AJ", :group => group, :position => 3, :priority => 3, :parent => root  )  
-
-task = Task.create(:name => "Slingbox", :group => group, :position => 1, :priority => 3, :parent => task_p)  
-task = Task.create(:name => "Cell booster", :group => group, :position => 2, :priority => 3, :parent => task_p )  
-task = Task.create(:name => "Discuss expense app", :group => group, :position => 3, :priority => 3, :parent => task_p )  
-
-
-task = Task.create(:name => "Laundry", :group => group, :position => 4, :parent => task_p  )
-%w[Fresh Stinky].each_with_index {|s,i| State.create(:name => s, :task=> task,:position => i+1)}
-task.update(:selected => 2)
-
-
-task_p = Task.create(:name => "AJ", :group => group, :position => 3, :priority => 3, :parent => root  )  
-
-task = Task.create(:name => "Slingbox", :group => group, :position => 1, :priority => 3, :parent => task_p)  
-task = Task.create(:name => "Cell booster", :group => group, :position => 2, :priority => 3, :parent => task_p )  
-task = Task.create(:name => "Discuss expense app", :group => group, :position => 3, :priority => 3, :parent => task_p )  
-
-
-task_p = Task.create(:name => "Out", :group => group, :position => 3, :priority => 3, :parent => root  )  
-
-task = Task.create(:name => "Medicine", :group => group, :position => 1, :priority => 3, :parent => task_p)  
-task = Task.create(:name => "Mail Netflix", :group => group, :position => 2, :priority => 3, :parent => task_p )  
-task_p = Task.create(:name => "Bank", :group => group, :position => 3, :priority => 3, :parent => task_p )  
-
-task = Task.create(:name => "deposit", :group => group, :position => 1, :priority => 3, :parent => task_p)  
-task = Task.create(:name => "temp card", :group => group, :position => 2, :priority => 3, :parent => task_p )  
-task = Task.create(:name => "get accts", :group => group, :position => 2, :priority => 3, :parent => task_p )  
-
-task_p = Task.create(:name => "Misc", :group => group, :position => 3, :priority => 3, :parent => root  )  
-
-task = Task.create(:name => "Paint doorbell", :group => group, :position => 1, :priority => 3, :parent => task_p)  
-task = Task.create(:name => "test blender", :group => group, :position => 2, :priority => 3, :parent => task_p )  
-task = Task.create(:name => "drawer bottom", :group => group, :position => 2, :priority => 3, :parent => task_p )  
-
-task_p = Task.create(:name => "Misc LGF", :group => group, :position => 3, :priority => 3, :parent => root  )  
-
-task = Task.create(:name => "search popup", :group => group, :position => 1, :priority => 3, :parent => task_p)  
-task = Task.create(:name => "search pane scrolling", :group => group, :position => 2, :priority => 3, :parent => task_p )  
-task = Task.create(:name => "popup size #525", :group => group, :position => 2, :priority => 3, :parent => task_p )  
-
-
-task_p = Task.create(:name => "Chores", :group => group, :position => 3, :priority => 3, :parent => root  )
-
-task = Task.create(:name => "Dishwasher", :group => group, :position => 1, :parent => task_p )
-%w[Clean Dirty].each_with_index {|s,i| State.create(:name => s, :task=> task,:position => i+1)}
-task.update(:selected => 1)
-
-task_p = Task.create(:name => "Make tea", :group => group, :position => 3, :priority => 3, :parent => task_p  )  
-
-task = Task.create(:name => "Get milk", :group => group, :position => 1, :priority => 3, :parent => task_p)  
-task = Task.create(:name => "Boil water", :group => group, :position => 2, :priority => 3, :parent => task_p )  
-
+end

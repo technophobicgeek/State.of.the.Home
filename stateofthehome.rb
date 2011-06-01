@@ -23,11 +23,6 @@ configure do
   $simplegeo.set_credentials(simplegeo_info["token"], simplegeo_info["secret"])
 end
 
-configure :development do |config|
-  require "sinatra/reloader"
-  config.also_reload "data_model.rb"
-end
-
 before '/api/*' do
   content_type 'application/json'
 end
@@ -57,6 +52,12 @@ helpers do
       State.create(State.accept_params(s_params,task))     
     end
   end
+  
+  # Basic partials
+  def partial(page, options={})
+    haml page, options.merge!(:layout => false)
+  end
+  
 end
 
 # CSS
@@ -80,16 +81,26 @@ get '/group/:code/task/:id/children' do
   @parent = find_task 
   @tasks = @parent.children
   
+  # URL up to parent
   if @parent.parent
-    @back = "/group/#{@parent.group.code}/task/#{@parent.parent.id}/children"
+    @back = to("/group/#{@parent.group.code}/task/#{@parent.parent.id}/children")
   else
-    @back = "/group/#{@parent.group.code}/tasks"
+    @back = to("/group/#{@parent.group.code}/tasks")
   end
+  
+  # URL to add a new task
+  @add_task = to("/group/#{@parent.group.code}/task/#{@parent.id}/add_task")
   
   @title = @parent.name
   haml :tasks
 end
 
+# Add a child to a task
+get '/group/:code/task/:id/add_task' do
+  @parent = find_task 
+
+  haml :add_task
+end
 
 # All GET requests
 get '/api/v1/group/:code/all' do
